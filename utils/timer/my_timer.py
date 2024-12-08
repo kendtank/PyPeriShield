@@ -33,7 +33,7 @@ class MyTimer(object):
 
     # 启动计时器。
     def start(self):
-        """ 使用 time.time() 而不是 time.clock()，因为 time.clock() 在多线程环境中可能不准确。"""
+        """ 使用 time.time() 而不是 time.clock()，因为 time.clock()（cpu耗时） 在多线程环境中可能不准确。"""
         # 记录当前时间作为计时的起点。
         self.start_time = time.time()
 

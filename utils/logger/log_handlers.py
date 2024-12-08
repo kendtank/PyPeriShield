@@ -9,11 +9,13 @@
 @Contact: tankang0722@gmail.com
 """
 
-
-
-from loguru import logger
-from .log_formatters import get_log_format, get_level_color, get_reset_color
 import os
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+# print(project_root)  # D:\kend\WorkProject\PyPeriShield
+os.chdir(project_root)
+import os
+from loguru import logger
+from utils.logger.log_formatters import get_log_format, get_level_color, get_reset_color
 from datetime import datetime
 
 
@@ -28,7 +30,7 @@ def setup_logger():
         enqueue=True  # 启用队列，确保多线程和多进程安全
     )
 
-    log_path = "../log"
+    log_path = "log"
     # 确保日志目录存在
     if not os.path.exists(log_path):
         os.makedirs(log_path)

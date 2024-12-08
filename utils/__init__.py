@@ -6,7 +6,11 @@
 @Software: PyCharm
 @modifier:
 """
-from .logger import logger
-from .timer import MyTimer as timer
+import os
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+os.chdir(project_root)
+
+from utils.logger import logger
+from utils.timer import MyTimer as timer
 
 __all__ = ['logger', 'timer']

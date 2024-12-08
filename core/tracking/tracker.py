@@ -4,7 +4,7 @@
 @Author: Kend
 @Date: 2024/11/23
 @Time: 14:54
-@Description: byte_tracker - 文件描述
+@Description: byte_tracker - 多目标跟踪算法实现层
 @Modify:
 @Contact: tankang0722@gmail.com
 """
@@ -32,7 +32,7 @@ class BYTETracker(object):
         self.kalman_filter = KalmanFilter()   # 卡尔曼滤波器，用于预测跟踪对象的下一帧位置。
 
 
-    # 更新跟踪结果
+    # 跟踪器主逻辑
     def update(self, output_results, img_info, img_size=(640, 640)):
         """接受检测头传递的结果数据"""
         # logger.info(f"update:{output_results}")     # [[4.8200e+02,  2.4262e+02,  6.1400e+02,  5.4700e+02,  9.9805e-01,9.6240e-01,  0.0000e+00]....] device='cuda:0'
@@ -219,6 +219,7 @@ def joint_stracks(tlista, tlistb):
             exists[tid] = 1
             res.append(t)
     return res
+
 
 """从轨迹列表 tlista 中移除出现在轨迹列表 tlistb 中的所有轨迹。"""
 def sub_stracks(tlista, tlistb):
