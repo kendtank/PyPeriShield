@@ -1,23 +1,21 @@
-###  语言选择/language-selection
-[view english version](utils/readme_en.md)
+###  Language Selection
+[View Chinese Version](../README.md)
 ---
 
-### 项目名称
-PyPeriShield: “PeriShield”结合了“Perimeter” 周界 和“Shield” 盾牌
-### 项目简介
-****智慧入侵检测系统
-- topic: 分布式集群推理、三维可视化、轨迹跟踪、入侵报警与人脸识别
-- 介绍：本项目开发了一套集成多种先进技术的智能园区安全解决方案。
-利用分布式集群推理实现高效并行处理，支持大规模数据和复杂场景。
-三维可视化平台提供直观的园区实时监控，用户可多视角查看人员和车辆活动。
-系统通过实时轨迹跟踪和违规视频回放，自动检测异常行为并保存相关片段，便于事后审查。
-设置虚拟围栏进行区域入侵报警，确保及时响应未经授权的进入。
-人脸识别技术用于识别已注册人员，并对未授权人员发出警报。
-该系统适用于智慧园区、企业园区和公共场所，提升安全管理效率和安全性。
+### Project Name
+PyPeriShield: "PeriShield" combines "Perimeter" and "Shield" 
+### Project Overview
+**** Smart Intrusion Detection System
+- topic: Distributed Cluster Inference, 3D Visualization, Trajectory Tracking, Intrusion Alerts, and Face Recognition
+- Introduction: This project develops an advanced smart park security solution that integrates multiple technologies. It leverages distributed cluster inference for efficient parallel processing, handling large-scale data and complex scenarios. A 3D visualization platform provides real-time monitoring with intuitive views of personnel and vehicle activities. The system tracks trajectories in real-time and records violation videos for post-event review. Virtual fences trigger intrusion alerts for unauthorized entries, ensuring timely responses. Face recognition identifies registered individuals and alerts on unregistered ones. Suitable for smart parks, corporate campuses, and public spaces, this system enhances security management efficiency and safety.
 
+Project Goals: 
+Event accuracy rate higher than 95%
+Less than 0.5 false alarms per hour
+Event detection within 1 minute
+Event traceability for up to 6 months
 
-项目目标：事件准确率高于95%，每小时误报率低于0.5次，事件及时性小于1分钟，事件可追溯6个月。
-### 项目结构
+### Project Structure
 
 #### 系统架构设计
 1. 客户端入口

@@ -4,10 +4,11 @@
 @Author: Kend
 @Date: 2024/11/23
 @Time: 14:44
-@Description: demo - manage的一个demo实现
+@Description: demo - 文件描述
 @Modify:
 @Contact: tankang0722@gmail.com
 """
+
 
 import argparse
 import os.path as osp
@@ -15,6 +16,11 @@ import cv2
 import time
 import os
 import torch
+from loguru import logger
+from tracking.byte_tracker import BYTETracker
+from track_utils.my_timer import MyTimer
+from visualization.visualize import plot_tracking
+from detector_head.yolo11.predictor_yolo11 import PredictorYolo11
 
 
 
