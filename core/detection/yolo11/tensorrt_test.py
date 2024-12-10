@@ -11,14 +11,16 @@
 
 import torch
 import torch_tensorrt
+from predictor_yolo11 import PredictorYolo11
+print("torch_tensorrt.version:", torch_tensorrt.__version__)
 
-print(torch_tensorrt.__version__)
-
-engine_file_path = "/home/lyh/work/depoly/PyPeriShield/weights/yolo11s.pt"
+torch_file_path = "/home/lyh/work/depoly/PyPeriShield-feature/weights/yolo11n.pt"
 
 # 加载你的PyTorch模型
-model = torch.load(engine_file_path)
+model_class = PredictorYolo11(torch_file_path, input_size=(640, 640), fp16=False)
+print(type(model_class.model))
 
+model = model_class.model
 # 将模型转换为TensorRT引擎
 trt_model = torch_tensorrt.compile(model, inputs=[torch_tensorrt.Input((1, 3, 224, 224))])
 

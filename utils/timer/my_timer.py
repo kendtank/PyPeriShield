@@ -35,11 +35,11 @@ class MyTimer(object):
     def start(self):
         """ 使用 time.time() 而不是 time.clock()，因为 time.clock()（cpu耗时） 在多线程环境中可能不准确。"""
         # 记录当前时间作为计时的起点。
-        self.start_time = time.time()
+        self.start_time = time.time()  # 秒
 
     # 停止计时器并计算时间差。
     def stop(self, average=True):
-        """ average: 如果为 True，返回平均时间；否则，返回单次时间差。"""
+        """ average: 如果为 True，返回平均时间；否则，返回单次时间差(与start比较)。"""
         self.diff = time.time() - self.start_time
         self.total_time += self.diff
         self.calls += 1

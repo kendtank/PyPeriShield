@@ -25,12 +25,12 @@ def main():
         input_size=(640, 640),
         half=False,
         detector='yolo11',  # 或 'yolov5'
-        num_workers=2
+        num_workers=4
     )
 
     # for img in images:
-    #     # 执行推理任务
-    #     detector.async_inference_wait(img)
+        # 执行推理任务
+        # detector.async_inference_wait(img)
         # detector.inference(img)
     detector.work(images)
     # return results

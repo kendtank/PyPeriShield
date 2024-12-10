@@ -31,7 +31,19 @@ class Detector:
     """检测头单例"""
 
     def __init__(
-            self, ckpt_path, input_size=(640, 640), half=False, num_workers=1, detector='yolo11'):
+            self,
+            ckpt_path,
+            conf_thres,
+            iou_thres,
+            input_size=(640, 640),
+            half=False,
+            iou_type=None,
+            num_workers=1,
+            detector='yolo11',
+    ):
+        self.iou_type=iou_type
+        self.conf_thres=conf_thres
+        self.iou_thres=iou_thres
         self.detector = detector
         self.input_size = input_size
         self.ckpt_path = ckpt_path
@@ -53,11 +65,15 @@ class Detector:
                     if self.detector == 'yolo11':
                         from core.detection.yolo11.predictor_yolo11 import PredictorYolo11
                         self.model = PredictorYolo11(
-                            self.ckpt_path, self.input_size, fp16=self.half
+                            self.ckpt_path, self.input_size, fp16=self.half, iou_type=None,
+                            conf_thres = self.conf_thres, iou_thres = self.iou_thres
                         )
                     elif self.detector == 'yolov5':
                         from core.detection.yolov5.predictor_yolov5 import Yolov5Predictor
-                        self.model = Yolov5Predictor(self.ckpt_path, self.input_size, self.half, iou_type='giou')
+                        self.model = Yolov5Predictor(
+                            self.ckpt_path, self.input_size, self.half, iou_type=self.iou_type,
+                            conf_thres = self.conf_thres, iou_thres = self.iou_thres
+                        )
                     else:
                         # NOTE 留给yolo12
                         raise ValueError(f"Unknown detector: {self.detector}")

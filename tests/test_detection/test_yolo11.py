@@ -10,84 +10,71 @@
 """
 
 import numpy as np
-from ultralytics import YOLO
-from concurrent.futures import ThreadPoolExecutor
 import logging
-
-logging.basicConfig(level=logging.INFO)
-
-
-class PredictorYolo11:
-    # 存储类的唯一实例
-    _instance = None
-
-    # 保证多个实例只有一个对象
-    def __new__(cls, *args, **kwargs):
-        if not cls._instance:
-            cls._instance = super(PredictorYolo11, cls).__new__(cls)
-        return cls._instance
-
-    def __init__(self, model_path, input_size=(640, 640), fp16=True, conf_threshold=0.1):
-        if not hasattr(self, 'initialized'):
-            try:
-                self.model = YOLO(model_path)
-            except Exception as e:
-                logging.error(f"Failed to load model from {model_path}: {e}")
-                raise RuntimeError(f"Failed to load model from {model_path}: {e}")
-
-            self.input_size = input_size
-            self.fp16 = fp16
-            self.conf_threshold = conf_threshold
-            self.initialized = True
-
-    def predict(self, image: np.ndarray, timer=None):
-        if timer:
-            timer.start()
-
-        img_info = {
-            "id": 0,
-            "file_name": None,
-            "height": image.shape[0],
-            "width": image.shape[1],
-            "raw_img": image,
-            "ratio": min(self.input_size[0] / image.shape[0], self.input_size[1] / image.shape[1])
-        }
-
-        try:
-            results_list = self.model.predict(
-                source=image,
-                task='detect',
-                conf=self.conf_threshold,
-                half=self.fp16
-            )
-        except Exception as e:
-            logging.error(f"Prediction failed: {e}")
-            raise RuntimeError(f"Prediction failed: {e}")
-
-        tensorboard_data = None
-        for results in results_list:
-            tensorboard_data = results.boxes.data
-
-        return tensorboard_data, img_info
+# -*- coding: utf-8 -*-
+"""
+@Time    : 2024/12/8 下午1:46
+@Author  : Kend
+@FileName: test_yolov5.py
+@Software: PyCharm
+@modifier:
+"""
+"""
+@Time    : 2024/11/23 下午11:42
+@Author  : Kend
+@FileName: test-.py
+@Software: PyCharm
+@modifier:
+"""
 
 
-class ConcurrentPredictor:
-    def __init__(self, model_path, input_size=(640, 640), fp16=True, conf_threshold=0.1, max_workers=10):
-        self.predictor = PredictorYolo11(model_path, input_size, fp16, conf_threshold)
-        self.executor = ThreadPoolExecutor(max_workers=max_workers)
+import os
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+os.chdir(project_root)
+import time
+import cv2
+from core.detection.detector import Detector
+from utils import timer
 
-    def predict(self, image: np.ndarray, timer=None):
-        future = self.executor.submit(self.predictor.predict, image, timer)
-        return future.result()
 
+def main():
+    timer1 = timer()
+    # 创建 Detector 实例
+    detector = Detector(
+        ckpt_path=r"weights/yolo11n.engine",  # 替换为实际的模型路径
+        input_size=(640, 640),
+        half=False,
+        detector='yolo11',
+        num_workers=2,
+        conf_thres = 0.1,
+        iou_thres = 0.4
+    )
+
+    rtsp_url = "camera001.mp4"
+    cap = cv2.VideoCapture(rtsp_url)
+    while True:
+        # 读取图像
+        ret, frame = cap.read()
+        if ret:
+            timer1.start()
+            # 显示图像
+            detector.async_inference_wait(frame)
+            print("推理一张图耗时：", timer1.stop(average=False))
+            # cv2.waitKey(1)
+            # cv2.imshow("RTSP", frame)
+        else:
+            print("采集失败！平均耗时一张图：", timer1.average_time)
+            break
 
 
 if __name__ == "__main__":
-    model_path = "path/to/your/model.pt"
-    predictor = ConcurrentPredictor(model_path)
+    time1 = time.time()
+    main()
+    print("time cost:", time.time() - time1)
 
-    # 假设你有一个图像数组 image
-    # image = np.array(...)
-    # result = predictor.predict(image)
-    # print(result)
-
+    """
+    测试视频 25 帧率 3051张图， 采用同步推理， num_workers=2
+    pt 耗时： 平均耗时一张图： 5.9ms  
+    onnx-gpu 耗时： cuda引擎： 平均耗时一张图： 5.87ms   tensorrt引擎： 平均耗时一张图： 4.35ms  (加载特别满，显卡资源是pt的三四倍)
+    engine 耗时：平均耗时一张图： 4.45 ms
+    """

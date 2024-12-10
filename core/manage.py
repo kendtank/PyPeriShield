@@ -9,59 +9,102 @@
 @Contact: tankang0722@gmail.com
 """
 
-import argparse
-import os.path as osp
-import cv2
-import time
 import os
-import torch
+
+from core.tracking.tracker import BYTETracker
+
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+# print(project_root)  # /home/lyh/work/depoly/PyPeriShield-feature
+os.chdir(project_root)
+from core.detection.detector import Detector
+from services.message_queue.mq import CameraMQ, Consumer
+from services.video_stream.rtsp_stream import RTSPCamera
+from utils.logger import logger
+from utils.load_yaml import load_yaml_file
 
 
+# self.arg = load_yaml_file("config/config.yaml")
+# t = tuple(self.arg['algorithm_para']['input_size'])
+# print(t, type(t))
 
-# 可以检测图像的类型
-IMAGE_EXT = [".jpg", ".jpeg", ".webp", ".bmp", ".png"]
+
+class CameraShield:
+    """ 摄像头管理类 以摄像头为单位 - 采图-推理-事件判定-回放 """
+
+    def __init__(self, came_ip):
+        self.came_ip = came_ip
+        self.arg = load_yaml_file("../PyPeriShield/config/config.yaml")
+        self.camera_id = None
+        self.camera_rtsp_url = None
+
+    # TODO 获取摄像头参数， 区域，判定线， 区域入侵区域
+    def get_camera_arg(self):
+        pass
+
+    def run(self):
+        # TODO 获取摄像头参数， 区域，判定线， 区域入侵区域
+        self.get_camera_arg()
+        # 初始化配置参数
+        # 初始化检测头
+        predictor = Detector(
+            self.arg['algorithm_para']['ckpt_path'],
+            self.arg['algorithm_para']['confidence_threshold'],
+            self.arg['algorithm_para']['iou_threshold'],
+            tuple(self.arg['algorithm_para']['input_size']),
+            self.arg['algorithm_para']['half'],
+            self.arg['algorithm_para']['iou_type'],
+            self.arg['algorithm_para']['num_workers'],
+            self.arg['algorithm_para']['model_type'],
+        )
+        # 初始化 MQ 生产者
+        mq_producer = CameraMQ(camera_id=self.camera_id)
+        # 初始化图像采集
+        camera_stream = RTSPCamera(
+            camera_id=self.camera_id,
+            rtsp_url=self.camera_rtsp_url,
+            save_dir=self.arg['cameras']['save_dir'],
+            mq_producer=mq_producer
+        )
+        camera_stream.run()
+
+        # 推理+跟踪
+
+        # 轨迹后处理
+
+        # 事件判定
+
+        # 回放
+
+        # 推送
+
+    def inference_and_tracker(self):
+        # 初始化跟踪器
+        tracker = BYTETracker(args, frame_rate=self.arg)  # 根据帧率决定缓存区
+
+    def playback(self):
+        pass
+
+    # @staticmethod
+    # def capture(camera_id, rtsp_url, save_dir, mq_producer):
+    #     return
 
 
-
+#
 """ 视频推理的演示方法 demo """
-def imageflow_demo(predictor, vis_folder, current_time, args):
+
+
+def imageflow_demo(predictor):
     """
     Args:
         predictor: # 检测头
-        vis_folder:  # 可视化视频输出文件夹
-        current_time: # 当前时间，用来命名可视化文档和视频
         args: # 参数类
     Returns:
     """
-    # --------------- video or camera------------
-    cap = cv2.VideoCapture(args.path if args.demo == "video" else args.camid)
-    width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)  # float
-    height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
-    fps = cap.get(cv2.CAP_PROP_FPS)  # 可视化视频fps与原视频保持一致
-    timestamp = time.strftime("%Y_%m_%d_%H_%M_%S", current_time)
-    save_folder = osp.join(vis_folder, timestamp)   # 可视化文件夹
-    os.makedirs(save_folder, exist_ok=True)
-    logger.info(f"save_folder{save_folder}")
-    if args.demo == "video":
-        filename = os.path.basename(args.path)
-        save_path = osp.join(save_folder, filename)
-    else:
-        save_path = osp.join(save_folder, "camera.mp4")
-    # 保持输出的可视化视频与原视频名字一致
-    logger.info(f"video save_path is {save_path}")
-    # 创建一个MP4写入对象
-    vid_writer = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*"mp4v"), fps, (int(width), int(height)))
-    # 初始化跟踪器
-    tracker = BYTETracker(args, frame_rate=fps)  # 根据帧率决定缓存区
-    # 初始化计时器
-    timer = MyTimer()
+
     # 检测的图像标记帧数号
     frame_id = 0
     results = []
     while True:
-        # 检测三十次日志输出一次
-        if frame_id % args.counts == 0:
-            logger.info('Processing frame {} ({:.2f} fps)'.format(frame_id, 1. / max(1e-5, timer.average_time)))
         ret_val, frame = cap.read()
         if ret_val:
             # 推理帧图像，
@@ -71,7 +114,8 @@ def imageflow_demo(predictor, vis_folder, current_time, args):
             # print("yolo11:", outputs)
             if outputs is not None:
                 # logger.info(f"检测头推理的结果：{outputs[0]}")   # 二维张量， 每一行都是7个数
-                online_targets = tracker.update(outputs, [img_info['height'], img_info['width']], img_size=args.input_size)
+                online_targets = tracker.update(outputs, [img_info['height'], img_info['width']],
+                                                img_size=args.input_size)
                 online_tlwhs = []
                 online_ids = []
                 online_scores = []
@@ -82,7 +126,7 @@ def imageflow_demo(predictor, vis_folder, current_time, args):
                     # print("tlwh[2] / tlwh[3]", tlwh[2] / tlwh[3])
                     vertical = tlwh[2] / tlwh[3] > args.aspect_ratio_thresh
                     if tlwh[2] * tlwh[3] > args.min_box_area and not vertical:
-                    # if tlwh[2] * tlwh[3] > args.min_box_area:
+                        # if tlwh[2] * tlwh[3] > args.min_box_area:
                         online_tlwhs.append(tlwh)
                         online_ids.append(tid)
                         online_scores.append(t.score)
@@ -113,6 +157,8 @@ def imageflow_demo(predictor, vis_folder, current_time, args):
 
 
 """获取路径中的所有图像"""
+
+
 def get_image_list(path):
     image_names = []
     for maindir, subdir, file_name_list in os.walk(path):
@@ -127,6 +173,8 @@ def get_image_list(path):
 """将多目标跟踪结果写入文件的函数。
 这个函数接受一个文件名和结果数据，然后按照指定的格式将结果写入文件。
 """
+
+
 def write_results(filename, results):
     save_format = '{frame},{id},{x1},{y1},{w},{h},{s},-1,-1,-1\n'
     with open(filename, 'w') as f:
@@ -135,7 +183,8 @@ def write_results(filename, results):
                 if track_id < 0:
                     continue
                 x1, y1, w, h = tlwh
-                line = save_format.format(frame=frame_id, id=track_id, x1=round(x1, 1), y1=round(y1, 1), w=round(w, 1), h=round(h, 1), s=round(score, 2))
+                line = save_format.format(frame=frame_id, id=track_id, x1=round(x1, 1), y1=round(y1, 1), w=round(w, 1),
+                                          h=round(h, 1), s=round(score, 2))
                 f.write(line)
     logger.info('save results to {}'.format(filename))
 
@@ -165,7 +214,6 @@ def video2images(video_path, output_folder, image_format='jpg'):
     print(f"转换完成，共生成 {frame_count} 张图像。")
 
 
-
 def main(args):
     logger.info(f"args.model_path:{args.model_path}")
     predictor = PredictorYolo11(model_path=args.model_path, input_size=args.input_size)
@@ -175,11 +223,11 @@ def main(args):
 
 class Args:
     # config
-    demo= "video"
+    demo = "video"
     path = r"D:\kend\myPython\Hk_Tracker\data\videos\palace.mp4"
     # path = r"D:\kend\work\Hk_Tracker\data\dataset\test_images"
-    save_result= r"D:\kend\myPython\Hk_Tracker\visualization\vis_folder\demo_output"
-    fps= 30
+    save_result = r"D:\kend\myPython\Hk_Tracker\visualization\vis_folder\demo_output"
+    fps = 30
     counts = 30
     # model
     model_path = r"D:\kend\myPython\Hk_Tracker\detector_head\yolo11\yolo11s.onnx"
@@ -187,8 +235,8 @@ class Args:
     fp16 = False  # cpu no half
     # tracker
     track_thresh = 0.65  # 追踪置信度阈值,低于此值则二次匹配追踪
-    track_buffer = 60    # 缓存帧数，决定最大丢失时间 2秒
-    match_thresh = 0.8   # 代价匹配阈值，太低容易目标id被重合的id带走
+    track_buffer = 60  # 缓存帧数，决定最大丢失时间 2秒
+    match_thresh = 0.8  # 代价匹配阈值，太低容易目标id被重合的id带走
     min_box_area = 16
     aspect_ratio_thresh = 3
 

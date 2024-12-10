@@ -1,0 +1,33 @@
+# 主要配置参数
+
+cameras:
+  streams: "rtsp"  # 采图方式
+  "fps": 10  # 帧率  需要和追踪器的缓存帧数成倍速， 10代表一秒抽10帧
+  save_dir: "/home/lyh/temp_images"
+  save_temp_interval: 10
+  save_date: 60
+
+
+rabbitmq:
+  rabbitmq_host: "localhost"
+  rabbitmq_port: 5672
+  rabbitmq_username: "guest"
+  rabbitmq_password: "guest"
+
+
+# 跟踪和检测算法的主要配置参数
+algorithm_para:
+  ckpt_path: "/home/lyh/work/depoly/PyPeriShield-feature/weights/yolo11n.pt"  # 模型路径
+  model_type: "yolo11"  # 检测头类型
+  input_size: [640, 640]  # 根据训练的网络输入决定
+  half: False  # fp16
+  confidence_threshold: 0.1  # 跟踪保留的最低置信度阈值
+  iou_threshold: 0.4  # 非极大值抑制阈值
+  iou_type: "giou"  # 非极大值抑制类型 可选(ciou)
+  num_workers: 1  # 推理线程池数量 若采用同步事件 测试过不要超过4， 异步事件可适当增加
+  track_buffer: 20  # 缓存帧数，决定最大丢失时间 2秒
+  track_thresh: 0.55  # 追踪置信度阈值,低于此值则二次匹配追踪
+  match_thresh: 0.8   # 代价匹配阈值，太低容易目标id被重合的id带走， 类是iou， 越高越准确
+  min_box_area: 16    # 最小目标检测面积
+  aspect_ratio_thresh: 5  # 目标 w/h 最大比例，超出则过滤
+

@@ -16,8 +16,9 @@ from core.detection.yolov5 import DetectMultiBackend
 
 class Yolov5Predictor:
 
-    def __init__(self, ckpt_path, input_size=(640, 640), fp16=False, iou_type='iou'):
-
+    def __init__(self, ckpt_path, input_size=(640, 640), fp16=False, iou_type='iou', conf_thres=0.1, iou_thres=0.4):
+        self.conf_thres = conf_thres
+        self.iou_thres = iou_thres
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         self.weights_path = ckpt_path
         # 设置图像预处理参数，当然这里只是为了保证推理视频帧的和训练的数据增强保持一致 NOTE yolov5不需要
@@ -53,7 +54,7 @@ class Yolov5Predictor:
         with torch.no_grad():
             person_pre = self.model(im)[0]  # pt模型推理
             outputs = postprocess(
-                person_pre, 1, 0.01, 0.4, iou=self.iou_type
+                person_pre, 1, self.conf_thres, self.iou_thres, iou=self.iou_type
             )
             # person_pre = self.model(im) # pt模型推理
             # print(person_pre, "person_pre")  # [[[...]]]

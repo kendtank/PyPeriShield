@@ -11,13 +11,15 @@ import torch
 from ultralytics import YOLO
 import cv2
 import numpy as np
-# from utils.logger import logger
 import os
 
 
 
 class PredictorYolo11:
-    def __init__(self, ckpt_path, input_size=(640, 640), fp16=False):
+    def __init__(self, ckpt_path, input_size=(640, 640), fp16=False, iou_type=None, conf_thres=0.1, iou_thres=0.4):
+        self.iou_type = iou_type  # yolov5的iou_type, 这里是为了保持参数一至
+        self.conf_thres = conf_thres
+        self.iou_thres = iou_thres
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.txt = True if os.path.basename(ckpt_path).endswith("engine") else False
         # logger.info(f"Loading model {ckpt_path}")
@@ -48,9 +50,9 @@ class PredictorYolo11:
         results_list = self.model.predict(
             source=image,
             task='detect',
-            conf=0.1,
+            conf=self.conf_thres,
             half=self.fp16,
-            iou=0.4
+            iou=self.iou_thres
         )
         # 遍历检测结果
         for results in results_list:  # 这是一个ultralytics.engine.results.Results对象
@@ -62,7 +64,8 @@ class PredictorYolo11:
 
 if __name__ == '__main__':
     # 设置当前工作目录为项目根目录
-    project_root = "D:\\kend\\WorkProject\\PyPeriShield"
+    # /home/lyh/.cache/torch/hub/checkpoints/resnet18-f37072fd.pth
+    project_root = os.path.abspath(os.path.dirname(__file__))
     os.chdir(project_root)
     # 测试图像路径
     image = "tests/frame_0000.jpg"

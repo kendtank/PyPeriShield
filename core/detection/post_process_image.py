@@ -8,10 +8,11 @@
 @Modify:
 @Contact: tankang0722@gmail.com
 """
-
+import mmdet
 import torch
 import torchvision
 from mmdet.core import bbox_overlaps
+# print(mmdet.mmcv_version)  需要使用2.28.0,
 
 """
 如果一个预测框的置信度是0.9，表示模型认为这个框内很可能包含一个对象。然后，模型预测这个对象属于 "猫" 类别的概率是0.8，属于 "狗" 类别的概率是0.2。
@@ -21,7 +22,7 @@ from mmdet.core import bbox_overlaps
 
 
 """推理张量的后处理, 支持图像的批处理，取决于prediction的batch_size"""
-def postprocess(prediction, num_classes, conf_thre=0.5, nms_thre=0.4, iou='iou'):
+def postprocess(prediction, num_classes, conf_thre=0.1, nms_thre=0.4, iou='iou'):
     """
     Args:
         prediction: 支持模型的预测输出为xywh，yolo的检测头输出为形状为 (batch_size, num_boxes,

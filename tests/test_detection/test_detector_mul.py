@@ -9,7 +9,7 @@
 import cv2
 import numpy as np
 import multiprocessing as mp
-from multiprocessing import Manager
+from multiprocessing import Queue
 from core.detection.detector import Detector
 import time
 import os
@@ -65,8 +65,9 @@ def multi_process_multi_thread_test(images, num_processes, num_workers, ckpt_pat
     """
 
     # 使用 Manager 创建共享的 Queue
-    manager = Manager()
-    result_queue = manager.Queue()
+    manager = mp.Queue()
+    result_queue = manager
+    # result_queue = manager.Queue()
 
     # 将图像列表均匀分配给每个进程
     chunk_size = len(images) // num_processes
@@ -122,7 +123,7 @@ if __name__ == "__main__":
     images = [cv2.imread("tests/frame_0000.jpg") for _ in range(200)]
 
     # 测试参数
-    num_processes = 8  # 进程数量
+    num_processes = 2  # 进程数量
     num_workers = 1    # 每个进程中的线程池数量
     ckpt_path = r"weights/yolo11n.pt"  # 替换为实际的模型路径
     input_size = (640, 640)
