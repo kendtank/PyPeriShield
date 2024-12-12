@@ -21,7 +21,7 @@ def test_tensorrt_inference():
 
 
     # 2. 准备输入数据
-    print("Preparing input data...")
+    print("Preparing input py_db...")
     input_shape = (1, 3, 224, 224)  # 批量大小为 1，图像尺寸为 224x224
     input_tensor = torch.randn(input_shape).cuda()
 

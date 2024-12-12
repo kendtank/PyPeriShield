@@ -19,8 +19,8 @@ os.chdir(project_root)
 from core.detection.detector import Detector
 from services.message_queue.mq import CameraMQ, Consumer
 from services.video_stream.rtsp_stream import RTSPCamera
-from utils.logger import logger
-from utils.load_yaml import load_yaml_file
+from tools.logger import logger
+from tools.load_yaml import load_yaml_file
 
 
 # self.arg = load_yaml_file("config/config.yaml")
@@ -225,7 +225,7 @@ class Args:
     # config
     demo = "video"
     path = r"D:\kend\myPython\Hk_Tracker\data\videos\palace.mp4"
-    # path = r"D:\kend\work\Hk_Tracker\data\dataset\test_images"
+    # path = r"D:\kend\work\Hk_Tracker\py_db\dataset\test_images"
     save_result = r"D:\kend\myPython\Hk_Tracker\visualization\vis_folder\demo_output"
     fps = 30
     counts = 30

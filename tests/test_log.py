@@ -10,7 +10,7 @@
 """
 
 
-from utils.logger.log_factory import logger
+from tools.logger.log_factory import logger
 import threading
 import multiprocessing
 

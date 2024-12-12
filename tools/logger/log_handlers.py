@@ -15,7 +15,7 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..
 os.chdir(project_root)
 import os
 from loguru import logger
-from utils.logger.log_formatters import get_log_format, get_level_color, get_reset_color
+from tools.logger.log_formatters import get_log_format, get_level_color, get_reset_color
 from datetime import datetime
 
 

@@ -1,0 +1,5 @@
+# 配置启动摄像头项 maximum 20 不要超过20个 这里以ip为主
+camera_ip:
+  camera_001: "camera001"
+  camera_002: "camera002"
+  camera_003: "camera003"

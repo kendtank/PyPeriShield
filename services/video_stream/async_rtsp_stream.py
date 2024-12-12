@@ -14,9 +14,9 @@ import cv2
 import os
 import time
 from datetime import datetime
-from utils.logger import logger
+from util.logger import logger
 from threading import Thread, Lock
-from services.message_queue.mq import CameraMQ, Consumer
+from services.message_queue.rabbit_mq import CameraMQ, Consumer
 
 
 class RTSPCamera:
@@ -137,10 +137,10 @@ if __name__ == "__main__":
     # my_consumer = Consumer(mq_producer)
     # logger.info(f"MQ消费者初始化成功：{id(my_consumer)}")
     # for i in range(10000):
-    #     data, tag = my_consumer.consume_message()
+    #     py_db, tag = my_consumer.consume_message()
     #     # 处理成功后手动确认消息
     #     my_consumer.ack_message(tag)
-    #     logger.info(f"MQ消费者接受消息成功:{data}")
+    #     logger.info(f"MQ消费者接受消息成功:{py_db}")
 
 
     # 启动每个摄像头的 RTSPCamera 实例

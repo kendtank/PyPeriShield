@@ -183,7 +183,7 @@ class Args:
     # config
     demo= "video"
     path = r"D:\kend\myPython\Hk_Tracker\data\videos\palace.mp4"
-    # path = r"D:\kend\work\Hk_Tracker\data\dataset\test_images"
+    # path = r"D:\kend\work\Hk_Tracker\py_db\dataset\test_images"
     save_result= r"D:\kend\myPython\Hk_Tracker\visualization\vis_folder\demo_output"
     fps= 30
     counts = 30

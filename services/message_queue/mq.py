@@ -13,7 +13,7 @@ import pika
 import time
 from threading import Thread, Lock
 import random
-from utils.logger import logger
+from tools.logger import logger
 
 
 # CameraMQ 类：每个摄像头实例拥有自己的 RabbitMQ 连接

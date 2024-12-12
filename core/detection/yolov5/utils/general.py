@@ -478,7 +478,7 @@ def check_file(file, suffix=''):
         return file
     else:  # search
         files = []
-        for d in 'data', 'models', 'utils':  # search directories
+        for d in 'py_db', 'models', 'utils':  # search directories
             files.extend(glob.glob(str(ROOT / d / '**' / file), recursive=True))  # find file
         assert len(files), f'File not found: {file}'  # assert file was found
         assert len(files) == 1, f"Multiple files match '{file}', specify exact path: {files}"  # assert unique
@@ -511,10 +511,10 @@ def check_dataset(data, autodownload=True):
 
     # Checks
     for k in 'train', 'val', 'names':
-        assert k in data, emojis(f"data.yaml '{k}:' field missing ❌")
+        assert k in data, emojis(f"py_db.yaml '{k}:' field missing ❌")
     if isinstance(data['names'], (list, tuple)):  # old array format
         data['names'] = dict(enumerate(data['names']))  # convert to dict
-    assert all(isinstance(k, int) for k in data['names'].keys()), 'data.yaml names keys must be integers, i.e. 2: car'
+    assert all(isinstance(k, int) for k in data['names'].keys()), 'py_db.yaml names keys must be integers, i.e. 2: car'
     data['nc'] = len(data['names'])
 
     # Resolve paths
@@ -577,7 +577,7 @@ def check_amp(model):
     device = next(model.parameters()).device  # get model device
     if device.type in ('cpu', 'mps'):
         return False  # AMP only used on CUDA devices
-    f = ROOT / 'data' / 'images' / 'bus.jpg'  # image to check
+    f = ROOT / 'py_db' / 'images' / 'bus.jpg'  # image to check
     im = f if f.exists() else 'https://ultralytics.com/images/bus.jpg' if check_online() else np.ones((640, 640, 3))
     try:
         assert amp_allclose(deepcopy(model), im) or amp_allclose(DetectMultiBackend('yolov5n.pt', device), im)
@@ -589,13 +589,13 @@ def check_amp(model):
         return False
 
 
-def yaml_load(file='data.yaml'):
+def yaml_load(file='py_db.yaml'):
     # Single-line safe yaml loading
     with open(file, errors='ignore') as f:
         return yaml.safe_load(f)
 
 
-def yaml_save(file='data.yaml', data={}):
+def yaml_save(file='py_db.yaml', data={}):
     # Single-line safe yaml saving
     with open(file, 'w') as f:
         yaml.safe_dump({k: str(v) if isinstance(v, Path) else v for k, v in data.items()}, f, sort_keys=False)
@@ -618,7 +618,7 @@ def url2file(url):
 
 
 def download(url, dir='.', unzip=True, delete=True, curl=False, threads=1, retry=3):
-    # Multithreaded file download and unzip function, used in data.yaml for autodownload
+    # Multithreaded file download and unzip function, used in py_db.yaml for autodownload
     def download_one(url, dir):
         # Download 1 file
         success = True
@@ -737,8 +737,8 @@ def labels_to_image_weights(labels, nc=80, class_weights=np.ones(80)):
 
 def coco80_to_coco91_class():  # converts 80-index (val2014) to 91-index (paper)
     # https://tech.amikelive.com/node-718/what-object-categories-labels-are-in-coco-dataset/
-    # a = np.loadtxt('data/coco.names', dtype='str', delimiter='\n')
-    # b = np.loadtxt('data/coco_paper.names', dtype='str', delimiter='\n')
+    # a = np.loadtxt('py_db/coco.names', dtype='str', delimiter='\n')
+    # b = np.loadtxt('py_db/coco_paper.names', dtype='str', delimiter='\n')
     # x1 = [list(a[i] == b).index(True) + 1 for i in range(80)]  # darknet to coco
     # x2 = [list(b[i] == a).index(True) if any(b[i] == a) else None for i in range(91)]  # coco to darknet
     return [

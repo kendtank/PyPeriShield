@@ -13,14 +13,15 @@ import cv2
 import os
 import time
 from datetime import datetime
-from utils.logger import logger
+
+from services.message_queue.rabbit_mq import ProducerClient
+from util.logger import logger
 from threading import Thread, Lock
-from services.message_queue.mq import CameraMQ, Consumer
 
 
 class RTSPCamera:
 
-    def __init__(self, camera_id, rtsp_url, save_dir, mq_producer, fps=25):
+    def __init__(self, camera_id, rtsp_url, save_dir, mq_producer:ProducerClient, fps=25):
         """
         初始化 RTSPCamera 类
         :param camera_id: 摄像头 ID
@@ -32,14 +33,12 @@ class RTSPCamera:
         self.rtsp_url = rtsp_url
         self.save_dir = save_dir
         self.mq_producer = mq_producer
-        self.fps = fps  # 抽帧
+        self.fps = fps  # 抽帧, 默认1s抽一张
         self.ori_fps = None
         # 共享锁，确保多线程环境下对 MQ 的安全访问
         self.mq_lock = Lock()
-
         # 确保保存目录存在
         os.makedirs(self.save_dir, exist_ok=True)
-
         # 打开 RTSP 流
         self.cap = cv2.VideoCapture(self.rtsp_url)
         if not self.cap.isOpened():
@@ -56,7 +55,7 @@ class RTSPCamera:
             try:
                 ret, frame = self.cap.read()
                 counts += 1
-
+                # logger.info(f"cameraaa:{counts}")
                 if not ret:
                     logger.error(f"RTSP采集图像失败：{self.camera_id}.")
                     time.sleep(1)  # 等待1秒后重试
@@ -65,7 +64,9 @@ class RTSPCamera:
                 # 抽帧
                 # counts = 1  2  3  。。。10  fps = 10
                 if counts % self.fps != 0:
+                    time.sleep(0.01)  # 生产环境禁止使用
                     continue
+
                 counts = 0   # 保证计时器一直在 0 - 10
                 # 创建保存目录
                 now_time = datetime.now().strftime("%Y%m%d%H%M")
@@ -75,37 +76,32 @@ class RTSPCamera:
                 # 获取当前时间戳（精确到微秒）1/25 毫秒足以, 这里使用微秒
                 current_time = int(time.time() * (10 ** 6))
                 filename = os.path.join(base_save_dir, f"{current_time}_{self.camera_id}.jpg")
-
                 # 保存图片
                 try:
-                    cv2.imwrite(filename, frame)
-                    # logger.info(f"保存图像成功： {self.camera_id} to {filename}")
+                    filename = self.save_image(frame, filename)
+                    # 将图片路径发送到 MQ
+                    self.send_message_to_mq(filename)
                 except Exception as e:
                     logger.error(f"保存图像失败：{self.camera_id}: {e}")
                     continue
-
-                # 将图片路径发送到 MQ
-                self.send_message_to_mq(filename)
-
-                # # 建立一个消费者
-                # my_consumer = Consumer(self.mq_producer)
-                # q, w = my_consumer.consume_message()
-                # logger.info(f"消费者解码结果：{q, w}")
-                # my_consumer.ack_message(w)
-
             except Exception as e:
                 logger.error(f"Error in capture_and_save_frame for camera {self.camera_id}: {e}")
                 time.sleep(1)  # 等待1秒后重试
 
 
+    def save_image(self, frame, filename):
+        # 保存图片
+        # 保存图片
+        cv2.imwrite(filename, frame)
+        return filename
+
     def send_message_to_mq(self, message):
         """将图片路径发送到 MQ"""
-        with self.mq_lock:
-            try:
-                self.mq_producer.send_message(message)
-                # logger.info(f"发送图像路径到MQ: {message}")
-            except Exception as e:
-                logger.error(f"发送图像路径到MQ失败: {e}")
+        try:
+            self.mq_producer.send_message(message)
+            # logger.info(f"发送图像路径到MQ: {message}")
+        except Exception as e:
+            logger.error(f"发送图像路径到MQ失败: {e}")
 
 
     def run(self):
@@ -119,6 +115,7 @@ class RTSPCamera:
         if self.cap and self.cap.isOpened():
             self.cap.release()
             logger.info(f"Closed RTSP stream for camera {self.camera_id}.")
+
 
 
 
@@ -141,10 +138,10 @@ if __name__ == "__main__":
     # my_consumer = Consumer(mq_producer)
     # logger.info(f"MQ消费者初始化成功：{id(my_consumer)}")
     # for i in range(10000):
-    #     data, tag = my_consumer.consume_message()
+    #     py_db, tag = my_consumer.consume_message()
     #     # 处理成功后手动确认消息
     #     my_consumer.ack_message(tag)
-    #     logger.info(f"MQ消费者接受消息成功:{data}")
+    #     logger.info(f"MQ消费者接受消息成功:{py_db}")
 
 
     # 启动每个摄像头的 RTSPCamera 实例
@@ -153,7 +150,7 @@ if __name__ == "__main__":
     save = "/home/lyh/temp_images"
     for camera in cameras:
         # 初始化 MQ 生产者
-        mq_producer = CameraMQ(camera_id=camera["camera_id"])
+        mq_producer = ProducerClient(camera_id=camera["camera_id"])
         # logger.info(f"MQ生产者初始化成功：{id(mq_producer)}")
         camera_instance = RTSPCamera(
             camera_id=camera["camera_id"],

@@ -1,23 +1,23 @@
 # 主要配置参数
 
+# 摄像头参数
 cameras:
   streams: "rtsp"  # 采图方式
-  "fps": 10  # 帧率  需要和追踪器的缓存帧数成倍速， 10代表一秒抽10帧
+  fps: 5  #  需要和追踪器的缓存帧数成倍速， 5代表抽5帧采集一次 25/5 fps = 5
   save_dir: "/home/lyh/temp_images"
   save_temp_interval: 10
   save_date: 60
 
-
+# 消息队列参数
 rabbitmq:
   rabbitmq_host: "localhost"
   rabbitmq_port: 5672
   rabbitmq_username: "guest"
   rabbitmq_password: "guest"
 
-
 # 跟踪和检测算法的主要配置参数
 algorithm_para:
-  ckpt_path: "/home/lyh/work/depoly/PyPeriShield-feature/weights/yolo11n.pt"  # 模型路径
+  ckpt_path: "/home/lyh/work/depoly/PyPeriShield-feature/weights/yolo11n.engine"  # 模型路径
   model_type: "yolo11"  # 检测头类型
   input_size: [640, 640]  # 根据训练的网络输入决定
   half: False  # fp16
@@ -25,9 +25,22 @@ algorithm_para:
   iou_threshold: 0.4  # 非极大值抑制阈值
   iou_type: "giou"  # 非极大值抑制类型 可选(ciou)
   num_workers: 1  # 推理线程池数量 若采用同步事件 测试过不要超过4， 异步事件可适当增加
-  track_buffer: 20  # 缓存帧数，决定最大丢失时间 2秒
+  track_buffer: 10  # 缓存帧数，由采图决定 最大丢失时间 默认(2秒)
   track_thresh: 0.55  # 追踪置信度阈值,低于此值则二次匹配追踪
   match_thresh: 0.8   # 代价匹配阈值，太低容易目标id被重合的id带走， 类是iou， 越高越准确
   min_box_area: 16    # 最小目标检测面积
   aspect_ratio_thresh: 5  # 目标 w/h 最大比例，超出则过滤
 
+# 挂载文件参数
+static_files:
+  debug: False  # 是否全量扫描还是增量更新
+  static_url_path: "/home/lyh/results"  # 事件挂载路径
+  timedelta: 60  # 事件挂载保存时间，每日0点会检测更新索引并删除过期文件
+
+
+# 事件参数
+events:
+  event_type: "all"  # 事件类型，all代表所有事件，也可以指定事件类型，如：person,car
+  event_threshold: 0.5  # 事件置信度阈值
+  event_save_interval: 10  # 事件保存间隔，单位秒
+  event_save_date: 60  # 事件保存时间，单位天

@@ -34,7 +34,7 @@ os.chdir(project_root)
 import time
 import cv2
 from core.detection.detector import Detector
-from utils import timer
+from tools import timer
 
 
 def main():

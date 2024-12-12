@@ -8,7 +8,7 @@
 """
 import threading
 import time
-from utils import timer
+from tools import timer
 
 def test_timer():
     t = timer()

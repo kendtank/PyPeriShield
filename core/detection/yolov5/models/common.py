@@ -26,13 +26,17 @@ from PIL import Image
 from torch.cuda import amp
 import sys, os
 
-sys.path.insert(0, os.path.abspath('detection/yolov5/utils'))
+# import os
+# project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+# # print(project_root)
+# os.chdir(project_root)
+
 
 from utils import TryExcept
 from utils.dataloaders import exif_transpose, letterbox
 from utils.general import (LOGGER, ROOT, Profile, check_requirements, check_suffix, check_version, colorstr,
-                           increment_path, is_notebook, make_divisible, non_max_suppression, scale_boxes, xywh2xyxy,
-                           xyxy2xywh, yaml_load)
+                          increment_path, is_notebook, make_divisible, non_max_suppression, scale_boxes, xywh2xyxy,
+                          xyxy2xywh, yaml_load)
 from utils.plots import Annotator, colors, save_one_box
 from utils.torch_utils import copy_attr, smart_inference_mode
 
@@ -395,7 +399,7 @@ class DetectMultiBackend(nn.Module):
             check_version(trt.__version__, '7.0.0', hard=True)  # require tensorrt>=7.0.0
             if device.type == 'cpu':
                 device = torch.device('cuda:0')
-            Binding = namedtuple('Binding', ('name', 'dtype', 'shape', 'data', 'ptr'))
+            Binding = namedtuple('Binding', ('name', 'dtype', 'shape', 'py_db', 'ptr'))
             logger = trt.Logger(trt.Logger.INFO)
             with open(w, 'rb') as f, trt.Runtime(logger) as runtime:
                 model = runtime.deserialize_cuda_engine(f.read())
@@ -502,7 +506,7 @@ class DetectMultiBackend(nn.Module):
         if 'names' not in locals():
             names = yaml_load(data)['names'] if data else {i: f'class{i}' for i in range(999)}
         if names[0] == 'n01440764' and len(names) == 1000:  # ImageNet
-            names = yaml_load(ROOT / 'data/ImageNet.yaml')['names']  # human-readable names
+            names = yaml_load(ROOT / 'py_db/ImageNet.yaml')['names']  # human-readable names
 
         self.__dict__.update(locals())  # assign all variables to self
 
@@ -660,7 +664,7 @@ class AutoShape(nn.Module):
     @smart_inference_mode()
     def forward(self, ims, size=640, augment=False, profile=False):
         # Inference from various sources. For size(height=640, width=1280), RGB images example inputs are:
-        #   file:        ims = 'data/images/zidane.jpg'  # str or PosixPath
+        #   file:        ims = 'py_db/images/zidane.jpg'  # str or PosixPath
         #   URI:             = 'https://ultralytics.com/images/zidane.jpg'
         #   OpenCV:          = cv2.imread('image.jpg')[:,:,::-1]  # HWC BGR to RGB x(640,1280,3)
         #   PIL:             = Image.open('image.jpg') or ImageGrab.grab()  # HWC x(640,1280,3)
@@ -828,7 +832,7 @@ class Detections:
         return self.n
 
     def __str__(self):  # override print(results)
-        return self._run(pprint=True)  # print results
+        return self._run(pprint=True)  # print results  # TODO
 
     def __repr__(self):
         return f'YOLOv5 {self.__class__} instance\n' + self.__str__()

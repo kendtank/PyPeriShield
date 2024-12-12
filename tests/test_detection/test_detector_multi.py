@@ -31,7 +31,7 @@ def worker_process(ckpt_path, input_size, half, detector, num_workers, image, re
 def main():
     from multiprocessing import Manager, Process
 
-    # Prepare shared data
+    # Prepare shared py_db
     manager = Manager()
     result_queue = manager.Queue()
 
