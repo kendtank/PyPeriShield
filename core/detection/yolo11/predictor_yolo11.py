@@ -14,6 +14,8 @@ import numpy as np
 import os
 
 
+# NOTE yolo11 outputs [x1, y1, x2, y2, obj_conf* class_conf, class_pred] 是 n * 6
+
 
 class PredictorYolo11:
     def __init__(self, ckpt_path, input_size=(640, 640), fp16=False, iou_type=None, conf_thres=0.1, iou_thres=0.4):
@@ -65,7 +67,7 @@ class PredictorYolo11:
 if __name__ == '__main__':
     # 设置当前工作目录为项目根目录
     # /home/lyh/.cache/torch/hub/checkpoints/resnet18-f37072fd.pth
-    project_root = os.path.abspath(os.path.dirname(__file__))
+    project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
     os.chdir(project_root)
     # 测试图像路径
     image = "tests/frame_0000.jpg"

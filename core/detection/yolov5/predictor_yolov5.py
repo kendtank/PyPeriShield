@@ -13,6 +13,8 @@ from core.detection.post_process_image import postprocess
 from core.detection.preprocess_image import preprocess_image
 from core.detection.yolov5 import DetectMultiBackend
 
+# NOTE yolov5 outputs [x1, y1, x2, y2, obj_conf, class_conf, class_pred] 已改为 n * 7
+
 
 class Yolov5Predictor:
 

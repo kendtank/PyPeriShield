@@ -40,6 +40,7 @@ class Detector:
             iou_type=None,
             num_workers=1,
             detector='yolo11',
+            pool=True
     ):
         self.iou_type=iou_type
         self.conf_thres=conf_thres
@@ -51,7 +52,8 @@ class Detector:
         self.num_workers = num_workers
         self.model = None
         self.lock = threading.Lock()
-        self.executor = ThreadPoolExecutor(max_workers=self.num_workers)  # 线程池提供异步
+        if pool:    # 是否启用线程池
+            self.executor = ThreadPoolExecutor(max_workers=self.num_workers)  # 线程池提供异步
         # NOTE 发现这种场景下，线程池的管理开销超过了多线程带来的并行加速效果。
         # 加载检测头
         self.get_detector()

@@ -4,14 +4,17 @@
 @Author: Kend
 @Date: 2024/12/7
 @Time: 10:58
-@Description: tensorrt - 文件描述
+@Description: tensorrt_torch_test - 文件描述
 @Modify:
 @Contact: tankang0722@gmail.com
 """
 
 import torch
+
 import torch_tensorrt
+
 from predictor_yolo11 import PredictorYolo11
+
 print("torch_tensorrt.version:", torch_tensorrt.__version__)
 
 torch_file_path = "/home/lyh/work/depoly/PyPeriShield-feature/weights/yolo11n.pt"
