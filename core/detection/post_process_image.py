@@ -8,11 +8,9 @@
 @Modify:
 @Contact: tankang0722@gmail.com
 """
-import mmdet
+# import mmdet
 import torch
 import torchvision
-from mmdet.core import bbox_overlaps
-# print(mmdet.mmcv_version)  需要使用2.28.0,
 
 """
 如果一个预测框的置信度是0.9，表示模型认为这个框内很可能包含一个对象。然后，模型预测这个对象属于 "猫" 类别的概率是0.8，属于 "狗" 类别的概率是0.2。
@@ -82,7 +80,9 @@ def postprocess(prediction, num_classes, conf_thre=0.1, nms_thre=0.4, iou='iou')
         # nms_out_index 是经过 NMS 后保留下来的预测框的索引。
         if iou in ['ciou', 'giou']:
             # Use gIoU for NMS
-            from mmcv.ops import bbox_overlaps
+            # from mmcv.ops import bbox_overlaps
+            from mmdet.core import bbox_overlaps
+            # print(mmdet.mmcv_version)  需要使用2.28.0,
             # 获取所有类别的唯一值
             unique_labels = detections[:, 6].unique()
             class_detections_list = []
@@ -116,6 +116,8 @@ def postprocess(prediction, num_classes, conf_thre=0.1, nms_thre=0.4, iou='iou')
 
 
 def nms_by_iou(boxes, scores, iou_threshold, iou_type='ciou'):
+    from mmdet.core import bbox_overlaps
+    # print(mmdet.mmcv_version)  需要使用2.28.0,
     """
     Perform non-maximum suppression using CIoU.
 

@@ -8,6 +8,7 @@
 @Modify:
 @Contact: tankang0722@gmail.com
 """
+import time
 
 import numpy as np
 import cv2
@@ -80,6 +81,7 @@ def preprocess_image(image, input_size, mean=None, std=None, swap=(2, 0, 1)):
 
 """ 在图像预处理之前处理 优点： 后续的检测、跟踪等算法可以专注于多边形内的区域，减少计算量和误检率，提高事件准确率 """
 class PolygonMaskProcessor:
+
     def __init__(self, image_shape, polygon_points=None):
         """
         初始化多边形掩码处理器，自动选择CPU或GPU处理。
@@ -90,8 +92,9 @@ class PolygonMaskProcessor:
         self.polygon_points = np.array([polygon_points], dtype=np.int32)
 
         # 检查CUDA是否可用 使用torch.cuda.is_available()速度慢
-        # print("是否可用cuda", cv2.cuda.getCudaEnabledDeviceCount())
+        # print("是否可用gpu", cv2.cuda.getCudaEnabledDeviceCount())
         self.use_cuda = cv2.cuda.getCudaEnabledDeviceCount() > 0
+
 
         if self.use_cuda:
             print("使用GPU处理图像")
@@ -132,6 +135,7 @@ class PolygonMaskProcessor:
         else:
             return self._apply_mask_cpu(image)
 
+
     def _apply_mask_cpu(self, image):
         """使用CPU应用多边形掩码。"""
         gray_color = 128  # 灰色值
@@ -165,14 +169,15 @@ class PolygonMaskProcessor:
 
 
 if __name__ == '__main__':
-    img_path = r"../../tests/frame_0000.jpg"
-    image = cv2.imread(img_path)
-    pre_img, _ = preprocess_image(image, input_size=(1280, 1280))
+    # img_path = r"../../tests/frame_0000.jpg"
+    # image = cv2.imread(img_path)
+    # pre_img, _ = preprocess_image(image, input_size=(1280, 1280))
     # TODO 需要对比cpu和gpu的速度，以及资源的开销
     # 掩码ROI示例用法
     # 读取输入图像
+    time1 = time.time()
     image = cv2.imread("../../tests/frame_0000.jpg")
-
+    print(image.shape)
     # 定义多边形顶点坐标 (x, y)
     polygon_points = [
         (50, 50),
@@ -186,9 +191,11 @@ if __name__ == '__main__':
     mask_processor = PolygonMaskProcessor(image.shape, polygon_points)
     # 应用多边形掩码
     masked_image = mask_processor.apply_mask(image)
+    print(masked_image.shape, (time.time()-time1) * 1000 ,"ms")  # a4000 40ms
+
     # 显示结果
-    cv2.imshow("Masked Image", masked_image)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    # cv2.imshow("Masked Image", masked_image)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
     # 保存结果
     # cv2.imwrite("masked_image.jpg", masked_image)
