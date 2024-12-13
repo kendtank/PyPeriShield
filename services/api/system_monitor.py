@@ -1,37 +1,73 @@
+# -*- coding: utf-8 -*-
+"""
+@Time    : 2023/08/16 上午9:36
+@Author  : Kend
+@FileName: me.py.py
+@Software: PyCharm
+@modifier:
+
+说明：
+SystemMonitor类
+    构造函数 (__init__):
+        接收 host、port 和 interval 参数，用于设置 Web 服务地址、端口和监控数据的刷新间隔。
+    setup_routes 方法:
+        定义了 /metrics 路由，返回当前系统监控资源的json数据。
+
+    monitor_system 方法:
+        在独立线程中采集系统的 CPU、内存、硬盘以及 GPU 信息。
+    run 方法:
+        启动 Web 服务和监控线程。
+    stop 方法:
+    停止监控服务。
+注意：
+    封装的监控服务是一个完全独立的模块，不需要与其他服务共享 FastAPI 实例。
+    如果需要与其他服务共享 FastAPI 实例，建议改为使用全局实例的方式，并通过配置或依赖注入管理。
+"""
+
 import threading
 import psutil
-import os
 from fastapi import FastAPI
-from fastapi.responses import HTMLResponse
+from fastapi.responses import JSONResponse, HTMLResponse
 from jinja2 import Template
 import uvicorn
+
 
 class SystemMonitor(threading.Thread):
     def __init__(self, host="127.0.0.1", port=8000, interval=5):
         """
-        System monitoring service with a web interface.
-
-        :param host: Host for the web server.
-        :param port: Port for the web server.
-        :param interval: Interval for updating system stats in seconds.
+        一个可独立运行的监控服务类.
+        :param host: web服务的主机地址.
+        :param port: 主机端口.
+        :param interval: 更新监控数据的时间间隔.
         """
         super().__init__()
         self.host = host
         self.port = port
         self.interval = interval
         self.running = False
+        # 创建FastAPI实例 如果系统中提供了外部的api，建议使用依赖注入
         self.app = FastAPI()
 
-        # Initialize metrics
+
+        # 初始化监控数据
         self.cpu_usage = []
         self.memory_info = {}
         self.disk_info = {}
         self.gpu_info = []
 
-        # Setup routes
+        # get方法的 路由
         self.setup_routes()
 
     def setup_routes(self):
+        @self.app.get("/metrics")
+        async def get_metrics():
+            return JSONResponse(content={
+                "cpu_usage": psutil.cpu_percent(percpu=False),  # 综合占用率
+                "memory_info": self.format_memory(self.memory_info),
+                "disk_info": self.format_memory(self.disk_info),
+                "gpu_info": self.gpu_info
+            })
+
         @self.app.get("/", response_class=HTMLResponse)
         async def get_dashboard():
             html_template = Template(
@@ -121,36 +157,23 @@ class SystemMonitor(threading.Thread):
             )
             return html_template.render(
                 cpu_usage=enumerate(self.cpu_usage),
-                memory_info=self.memory_info,
-                disk_info=self.disk_info,
+                memory_info=self.format_memory(self.memory_info),
+                disk_info=self.format_memory(self.disk_info),
                 gpu_info=self.gpu_info
+
             )
 
+
     def monitor_system(self):
-        """Collect system metrics."""
+        """收集系统的使用数据."""
         while self.running:
-            # CPU usage
+            # 这里监控每个核心的使用率
             self.cpu_usage = psutil.cpu_percent(percpu=True)
-
-            # Memory info
             mem = psutil.virtual_memory()
-            self.memory_info = {
-                "total": mem.total,
-                "used": mem.used,
-                "free": mem.free,
-                "percent": mem.percent,
-            }
-
-            # Disk info
+            self.memory_info = {"total": mem.total, "used": mem.used, "free": mem.free, "percent": mem.percent}
             disk = psutil.disk_usage('/')
-            self.disk_info = {
-                "total": disk.total,
-                "used": disk.used,
-                "free": disk.free,
-                "percent": disk.percent,
-            }
-
-            # GPU info (if available)
+            self.disk_info = {"total": disk.total, "used": disk.used, "free": disk.free, "percent": disk.percent}
+            # GPU info (if available), no gpu
             try:
                 import pynvml
                 pynvml.nvmlInit()
@@ -171,27 +194,52 @@ class SystemMonitor(threading.Thread):
                     })
 
                 pynvml.nvmlShutdown()
-            except ImportError:
-                self.gpu_info = [{"name": "N/A", "total_memory": "N/A", "used_memory": "N/A", "free_memory": "N/A", "gpu_utilization": "N/A", "memory_utilization": "N/A"}]
 
-            # Wait before collecting the next metrics
+                # 默认有GPU
+                try:
+                    self.gpu_info = self.format_gpu_info(self.gpu_info)
+                    # 验证有直接不管他，转换必定为正常的
+                except:
+                    # 没有不管直接显示[]
+                    pass
+
+            except ImportError:
+                self.gpu_info = [{"name": "N/A", "total_memory": "N/A", "used_memory": "N/A", "free_memory": "N/A",
+                                  "gpu_utilization": "N/A", "memory_utilization": "N/A"}]
+
             threading.Event().wait(self.interval)
 
+
+    # 内存信息 GB
+    def format_memory(self, info):
+        """Format memory data in GB."""
+        print('info:::', info)
+        # return {k: f"{v / (1024 ** 3):.2f} GB" if isinstance(v, (int, float)) else v for k, v in info.items()}
+        return {k: f"{v / (1024 ** 3):.2f} GB" if isinstance(v, int) else v for k, v in info.items()}
+
+    # gpu MB
+    def format_gpu_info(self, info):
+        """Format GPU memory data."""
+        for gpu in info:
+            gpu['total_memory'] = f"{gpu['total_memory'] / (1024 ** 2):.2f} MB"
+            gpu['used_memory'] = f"{gpu['used_memory'] / (1024 ** 2):.2f} MB"
+            gpu['free_memory'] = f"{gpu['free_memory'] / (1024 ** 2):.2f} MB"
+        return info
     def run(self):
-        """Start the monitoring service."""
         self.running = True
-        monitor_thread = threading.Thread(target=self.monitor_system)
-        monitor_thread.daemon = True
+        monitor_thread = threading.Thread(target=self.monitor_system, daemon=True)
+        monitor_thread.daemon = True  # 设置为守护线程，主线程异常后 守护线程会自动终止。
         monitor_thread.start()
 
-        # Start the FastAPI server
+
         uvicorn.run(self.app, host=self.host, port=self.port)
 
     def stop(self):
-        """Stop the monitoring service."""
+        """停止监控服务"""
         self.running = False
 
-# Example usage
+
+# Example
 if __name__ == "__main__":
     monitor = SystemMonitor(host="127.0.0.1", port=8000, interval=5)
     monitor.start()
@@ -200,4 +248,4 @@ if __name__ == "__main__":
         monitor.join()
     except KeyboardInterrupt:
         monitor.stop()
-        print("Monitoring service stopped.")
+        print("监控服务停止.")

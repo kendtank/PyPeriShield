@@ -8,15 +8,15 @@
 @Modify:
 @Contact: tankang0722@gmail.com
 """
-
+# NOTE: 可以考虑存图和发送mq做异步处理 - 待优化项
 
 import cv2
 import os
 import time
 from datetime import datetime
-from util.logger import logger
+from tools.logger import logger
 from threading import Thread, Lock
-from services.message_queue.rabbit_mq import CameraMQ, Consumer
+from services.message_queue.rabbit_mq import *
 
 
 class RTSPCamera:
