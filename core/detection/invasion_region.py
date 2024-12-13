@@ -50,7 +50,7 @@ class InvasionYolo11:
             # 打印边界框数据
             if tensorboard_data.shape[0] > 0:  # 检测到的结果大于0
                 return tensorboard_data
-        return None
+        return tensorboard_data
 
 
 if __name__ == '__main__':

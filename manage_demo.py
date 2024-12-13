@@ -39,6 +39,7 @@ from tools.load_yaml import load_yaml_file
 import threading
 from queue import Queue
 
+
 """
 遇到的一个问题，消费端拿到了同一张图，需要给多个算法去处理
 方案1：声明多个算法队列，对应算法处理对应的图像队列
@@ -156,6 +157,7 @@ class CameraShield:
         # 进行预测
         resource = self.invasion_predictor.predict(mask)
         if resource is not None:
+            # TODO
             logger.error("人员入侵！违规！！！！!\n")
             logger.error("人员入侵！发送到事件消费类！")
 
@@ -191,7 +193,7 @@ class CameraShield:
                 self.arg['algorithm_para']['model_type'],
             )
         # 初始化轨迹管理器
-        track_manage = TracksManager(max_missed_frames=4 * self.arg["cameras"]["fps"])  # 可视化的轨迹长度
+        track_manage = TracksManager(max_missed_frames=2 * self.arg["cameras"]["fps"])  # 可视化的轨迹长度, 需要和 跟踪的缓冲有关
         # -----------------------目标追踪-------------------- #  40 ms
 
 

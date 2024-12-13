@@ -1,4 +1,5 @@
 # 配置启动摄像头项 maximum 20 不要超过20个 这里以ip为主
+# 后续直接读取数据库按需负载 增加机器码做均衡生产
 camera_ip:
   camera_001: "camera001"
   camera_002: "camera002"
