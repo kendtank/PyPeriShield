@@ -4,7 +4,7 @@
 @Author: Kend
 @Date: 2024/11/23
 @Time: 14:44
-@Description: demo - manage的一个demo实现
+@Description: 实现异步的rtsp采图 待完成--
 @Modify:
 @Contact: tankang0722@gmail.com
 """
@@ -17,6 +17,7 @@ from datetime import datetime
 from tools.logger import logger
 from threading import Thread, Lock
 from services.message_queue.rabbit_mq import *
+
 
 
 class RTSPCamera:

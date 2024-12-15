@@ -8,10 +8,9 @@
 @Modify:
 @Contact: tankang0722@gmail.com
 
-RabbitMQ 的 Python 客户端 pika 不是线程安全的。这意味着你不能在多个线程中共享同一个 Connection 或 Channel 对象。
-如果你打算在多个线程中使用 RabbitMQ，必须确保每个线程都有自己独立的 Connection 和 Channel
-那我现在就是需要在两个不同的线程中采图，取图，根据我的这个类，修改一下，我现在就是遇到了冲突的问题
-# 那我现在就是需要在两个不同的线程中采图，取图，根据我的这个类，修改一下，我现在就是遇到了冲突的问题
+踩坑：
+    RabbitMQ 的 Python 客户端 pika 不是线程安全的。这意味着你不能在多个线程中共享同一个 Connection 或 Channel 对象。
+    如果你打算在多个线程中使用 RabbitMQ，必须确保每个线程都有自己独立的 Connection 和 Channel
 """
 
 
@@ -128,8 +127,6 @@ class ConsumerClient(RabbitMQBase):
 if __name__ == '__main__':
     pass
     """
-    解释
-
     RabbitMQBase：这是一个基类，包含了 RabbitMQClient 的通用功能，如连接管理、队列声明等。ProducerClient 和 ConsumerClient 继承自 RabbitMQBase，分别实现了生产和消费的具体逻辑。
     ProducerClient：负责将图像路径发送到 RabbitMQ 队列中。每次发送消息时，都会调用 ensure_connection() 来确保连接有效。
     ConsumerClient：负责从 RabbitMQ 队列中获取图像路径。你可以选择使用阻塞式消费（consume_message_wait）或非阻塞式消费（consume_message_get）。在这个例子中，我们使用了非阻塞式消费，因为它不会阻塞主线程。

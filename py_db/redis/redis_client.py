@@ -1,3 +1,12 @@
+# -*- coding: utf-8 -*-
+"""
+@Time    : 2024/12/6 下午8:42
+@Author  : Kend
+@FileName: redis.py
+@Software: PyCharm
+@modifier:
+"""
+
 import redis
 from typing import Any, Optional
 
@@ -68,25 +77,20 @@ class RedisClient:
         return self.set_data(key, value)
 
 
+
 # 使用示例
 if __name__ == "__main__":
     # 创建RedisClient实例
     rc = RedisClient(host='127.0.0.1', port=6379, db=0, password=None)
-
     # 插入数据
     print("Setting data:", rc.set_data('test_key', 'Hello, Redis!'))
-
     # 获取数据
     print("Getting data:", rc.get_data('test_key'))
-
     # 更新数据
     print("Updating data:", rc.update_data('test_key', 'Updated Value'))
-
     # 再次获取数据以验证更新
     print("Getting updated data:", rc.get_data('test_key'))
-
     # 删除数据
     print("Deleting data:", rc.delete_data('test_key'))
-
     # 验证删除
     print("Checking deleted data:", rc.get_data('test_key'))

@@ -1,7 +1,16 @@
+# -*- coding: utf-8 -*-
+"""
+@Time    : 2024/12/6 下午8:42
+@Author  : Kend
+@FileName: mysql_client.py
+@Software: PyCharm
+@modifier:
+"""
+
 import mysql.connector
 from mysql.connector import Error
 
-
+"""使用 mysql.connector-Oracle 官方提供的 MySQL 驱动程序, 之前用的一直pymysql, 提供了一个异步pysql的组件类"""
 
 class MySQLClient:
     def __init__(self, host, database, user, password):
@@ -71,24 +80,18 @@ class MySQLClient:
 # 使用示例
 if __name__ == "__main__":
     db = MySQLClient(host='localhost', database='test_db', user='root', password='password')
-
     # 创建表
     db.create_table('users', 'id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), age INT')
-
     # 插入数据
     db.insert_data('users', {'name': 'Alice', 'age': 30})
     db.insert_data('users', {'name': 'Bob', 'age': 25})
-
     # 查询数据
     users = db.select_data('users')
     for user in users:
         print(user)
-
     # 更新数据
     db.update_data('users', 'age = 31', 'name = "Alice"')
-
     # 删除数据
     db.delete_data('users', 'name = "Bob"')
-
     # 关闭连接
     db.close()

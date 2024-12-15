@@ -6,10 +6,11 @@
 @Software: PyCharm
 @modifier:
 """
-
+import datetime
 import cv2
 import numpy as np
 from core.trajectory.track import Track
+from tools import logger
 
 
 # 轨迹管理器-以摄像头为单位
@@ -51,20 +52,15 @@ class TracksManager:
         for track in self.tracks.values():
             # 遍历每个id轨迹对象，检查轨迹中两两的点是否存在与给定的lines相交
             if track.check_intersection(self.lines):
-                # print(f"Track ID {track.id} intersected with lines: {track.get_intersected_lines()}")
+                print(f"Track ID {track.id} intersected with lines: {track.get_intersected_lines()}")
                 # print(track.intersected_lines)  # {((800, 643), (1082, 604))}
                 # 如果轨迹中两两的点存在与给定的lines相交, 判断另外一条的周界线这个id有没有触碰
                 lines_set = set(tuple(tuple(sublist) for sublist in line) for line in self.lines)
-                # print(lines_set, track.intersected_lines)
-                # 比较两个 set 是否相等
-                if lines_set == track.intersected_lines:
-                    pass
-                    # print("两个集合相等")
-                else:
-                    pass
-                    # print("两个集合不相等")
-                    # 判断是不是与两条线都相交了
-                    # 将二维列表中的每个子列表转换为元组，并创建一个新的 set
+                print(lines_set, track.intersected_lines)
+                # 碰线超过1次
+                if len(track.intersected_lines) >= 1:
+                    # print("两个集合相等有人翻越围墙", datetime.now(), len(lines_set))
+                    return track.id
 
     def get_all_tracks(self):
         return list(self.tracks.values())
@@ -72,19 +68,23 @@ class TracksManager:
 
 
 # 绘制轨迹
-def draw_trajectories(frame, tracks, lines=None, max_length=30):
+def draw_trajectories(frame, tracks, lines=None, max_length=30, track_id=None):
     """
     Args:
         lines: 判定线
         frame: 当前帧的图像
         tracks: get_all_tracks(), 也就是所有的轨迹id对象
-        max_length: 轨迹显示的最大长度
+        max_length: 轨迹显示的最大长度,
+        track_id: 违规id
     Returns:
     """
+    if track_id is not None:
+        cv2.putText(frame, f"ALARM: ID-{track_id} Invasion!!!",
+                    org=(5, 60), fontScale=2, color=(0,0,255), thickness=2, fontFace=2)
+
+
     if lines is not None:
-        # print(frame.shape)
-        _color = (255, 0, 0)  # 红色
-        # print(lines)  # [[[1024, 1029], [1468, 1053]], [[1800, 973], [2255, 1200]]]
+        _color = (0, 255, 0)  # 绿色  bgr
         # 显示 判定线
         cv2.polylines(frame, np.array(lines, dtype=np.int32), isClosed=False, color=_color, thickness=3)
         # cv2.polylines(frame, lines, isClosed=False, color=_color, thickness=3)
@@ -99,13 +99,16 @@ def draw_trajectories(frame, tracks, lines=None, max_length=30):
             color = (0, 255, 0)  # 默认颜色为绿色
 
             # 如果轨迹与线段相交，改变颜色
-            if track.intersected_lines:
-                # TODO 相交
-                color = (0, 0, 255)  # 红色表示相交
+            # print("track.intersected_lines:::", track.intersected_lines)  # {((1045, 445), (1085, 1079))}
+            if track.intersected_lines:  # 非空
+                # TODO 相交, 记录违规时间， 推送三维报警
+                logger.info(f"人员翻墙！！！！, 时间为：{datetime.datetime.now()}")
+                color = (0, 0, 255)  # 轨迹红色表示相交
             cv2.polylines(frame, [points], isClosed=False, color=color, thickness=2)
 
-            # 在相交点处添加标记
+
+            # 在相交点处添加标记  相交的线变红色
             for line in track.intersected_lines:
-                cv2.line(frame, tuple(map(int, line[0])), tuple(map(int, line[1])), (255, 0, 0), 2)
+                cv2.line(frame, tuple(map(int, line[0])), tuple(map(int, line[1])), (0, 0, 255), 5)
 
     return frame

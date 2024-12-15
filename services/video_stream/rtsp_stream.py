@@ -4,7 +4,21 @@
 @Author: Kend
 @Date: 2024/11/23
 @Time: 14:44
-@Description: demo - manage的一个demo实现
+@Description: rtsp的一个实现， 之前封装过三种方式
+1: 一直获取帧号并解码（根据需要解码帧）cap.grab() 只抓取下一帧数据，而不解码。
+    说明：这种方法用于持续获取视频流帧号，但仅在需要时解码帧数据。通过 cv2.VideoCapture 的 CAP_PROP_POS_FRAMES 属性实时获取当前帧号。
+2：采集需要的帧后休眠，必要时跳到最新帧号
+    说明：通过调用 cap.set(cv2.CAP_PROP_POS_FRAMES, frame_number) 将读取位置跳到最新需要的帧号。当没有新需求时，可以通过休眠降低资源消耗。
+    cap.set() 允许将视频流的位置设置为指定帧号。
+1：优化项：
+    创建一个缓冲区：用于存储最新的帧和帧号。
+    后台线程：持续从 RTSP 流中读取帧，并更新缓冲区中的帧号。
+    主程序：在需要时，从缓冲区中获取最新的帧并进行解码。
+2：优化项：
+    创建一个控制标志：用于控制是否继续采集帧。
+    后台线程：根据控制标志决定是否set后继续采集帧。
+    主程序：在需要时，设置控制标志为 True 并重新开始采集，不需时设置为 False 并暂停采集。
+方法1: 12th i7 千兆的主机可以支持40个视频流的采集， 方法2：能够支持80组，但是对延时特别敏感。建议不要使用
 @Modify:
 @Contact: tankang0722@gmail.com
 """
@@ -13,9 +27,8 @@ import cv2
 import os
 import time
 from datetime import datetime
-
 from services.message_queue.rabbit_mq import ProducerClient
-from util.logger import logger
+from tools.logger import logger
 from threading import Thread, Lock
 
 
@@ -29,6 +42,7 @@ class RTSPCamera:
         :param save_dir: 图片保存目录
         :param mq_producer: 已封装好的 MQ 生产者实例
         """
+        self.cap = None
         self.camera_id = camera_id
         self.rtsp_url = rtsp_url
         self.save_dir = save_dir
@@ -39,54 +53,66 @@ class RTSPCamera:
         self.mq_lock = Lock()
         # 确保保存目录存在
         os.makedirs(self.save_dir, exist_ok=True)
-        # 打开 RTSP 流
-        self.cap = cv2.VideoCapture(self.rtsp_url)
-        if not self.cap.isOpened():
-            logger.exception(f"RTSP视频流打开失败：{self.camera_id}.")
-            raise Exception(f"RTSP视频流打开失败：{self.camera_id}.")
-        # 获取原始帧率
-        self.ori_fps = self.cap.get(cv2.CAP_PROP_FPS)
+        self.lost_time = 0
 
 
     def capture_and_save_frame(self):
         """从 RTSP 流中持续捕获帧并保存为图片, 传递到MQ中"""
-        counts = 0
         while True:
-            try:
-                ret, frame = self.cap.read()
-                counts += 1
-                # logger.info(f"cameraaa:{counts}")
-                if not ret:
-                    logger.error(f"RTSP采集图像失败：{self.camera_id}.")
-                    time.sleep(1)  # 等待1秒后重试
-                    continue
+            self.cap = None
+            time.sleep(2)
+            # 打开 RTSP 流
+            self.cap = cv2.VideoCapture(self.rtsp_url)
+            if not self.cap.isOpened():
+                logger.exception(f"RTSP视频流打开失败：{self.camera_id}.")
+                time.sleep(5)
+                self.cap.release()
+            # 获取原始帧率
+            self.ori_fps = self.cap.get(cv2.CAP_PROP_FPS)
+            counts = 0
 
-                # 抽帧
-                # counts = 1  2  3  。。。10  fps = 10
-                if counts % self.fps != 0:
-                    time.sleep(0.01)  # 生产环境禁止使用
-                    continue
-
-                counts = 0   # 保证计时器一直在 0 - 10
-                # 创建保存目录
-                now_time = datetime.now().strftime("%Y%m%d%H%M")
-                base_save_dir = f"{self.save_dir}/{now_time}"
-                # 确保保存目录存在
-                os.makedirs(base_save_dir, exist_ok=True)
-                # 获取当前时间戳（精确到微秒）1/25 毫秒足以, 这里使用微秒
-                current_time = int(time.time() * (10 ** 6))
-                filename = os.path.join(base_save_dir, f"{current_time}_{self.camera_id}.jpg")
-                # 保存图片
+            # 采集图像
+            while True:
                 try:
-                    filename = self.save_image(frame, filename)
-                    # 将图片路径发送到 MQ
-                    self.send_message_to_mq(filename)
+                    ret, frame = self.cap.read()
+                    counts += 1
+                    if not ret:
+                        logger.error(f"RTSP采集图像失败：{self.camera_id}.")
+                        time.sleep(1)  # 等待1秒后重试
+                        self.lost_time += 1
+                        if self.lost_time >= 5:
+                            self.cap.release()
+                            break
+                        continue
+
+                    # 抽帧
+                    # counts = 1  2  3  。。。10  fps = 10
+                    if counts % self.fps != 0:
+                        time.sleep(0.01)  # 生产环境禁止使用
+                        continue
+
+                    counts = 0   # 保证计时器一直在 0 - 10
+                    # 创建保存目录
+                    now_time = datetime.now().strftime("%Y%m%d%H%M")
+                    base_save_dir = f"{self.save_dir}/{now_time}"
+                    # 确保保存目录存在
+                    os.makedirs(base_save_dir, exist_ok=True)
+                    # 获取当前时间戳（精确到微秒）1/25 毫秒足以, 这里使用微秒
+                    current_time = int(time.time() * (10 ** 6))
+                    filename = os.path.join(base_save_dir, f"{current_time}_{self.camera_id}.jpg")
+                    # 保存图片
+                    try:
+                        filename = self.save_image(frame, filename)
+                        # 将图片路径发送到 MQ
+                        self.send_message_to_mq(filename)
+                    except Exception as e:
+                        logger.error(f"保存图像失败：{self.camera_id}: {e}")
+                        continue
                 except Exception as e:
-                    logger.error(f"保存图像失败：{self.camera_id}: {e}")
-                    continue
-            except Exception as e:
-                logger.error(f"Error in capture_and_save_frame for camera {self.camera_id}: {e}")
-                time.sleep(1)  # 等待1秒后重试
+                    logger.error(f"Error in capture_and_save_frame for camera {self.camera_id}: {e}")
+                    time.sleep(2)  # 等待2秒后重试
+                    self.cap.release()
+                    break
 
 
     def save_image(self, frame, filename):

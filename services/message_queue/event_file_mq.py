@@ -1,13 +1,23 @@
+# -*- coding: utf-8 -*-
 """
-每个算法检测进程都可以实例化该类，并使用它来发送消息。
+@Author: Kend
+@Date: 2024/12/13
+@Time: 14:44
+@Description:
+@Modify:
+@Contact: tankang0722@gmail.com
+
+每个算法检测进程都可以实例化该类，并使用它来发送事件消息。
 通过这种方式，你可以更方便地管理RabbitMQ连接和通道的生命周期，并且可以在类中添加更多的功能（如批量发送、错误处理等）。
 
 设计思路
-RabbitMQProducer 类：我们将创建一个 RabbitMQProducer 类，负责初始化RabbitMQ连接和通道，并提供发送消息的功能。该类将在每个算法检测进程中实例化一次，并保持连接和通道的持久化。
-单例模式：虽然每个进程会实例化一个 RabbitMQProducer 对象，但每个对象内部的RabbitMQ连接和通道将保持持久化，避免频繁地创建和销毁资源。
-批量发送：为了提高性能，RabbitMQProducer 类可以实现批量发送消息的功能，减少与RabbitMQ的交互次数。
-错误处理和重连机制：为了确保系统的健壮性，RabbitMQProducer 类将包含错误处理和自动重连机制。如果RabbitMQ连接中断，生产者将尝试重新连接，并继续发送未发送的消息。
-日志记录：我们将在类中添加日志记录功能，方便调试和监控。
+    EventRabbitMQProducer 类：
+        我们将创建一个 EventRabbitMQProducer 类，负责初始化RabbitMQ连接和通道，并提供发送消息的功能。该类将在每个算法检测进程中实例化一次，并保持连接和通道的持久化。
+    单例模式：
+        虽然每个进程会实例化一个 EventRabbitMQProducer 对象，但每个对象内部的RabbitMQ连接和通道将保持持久化，避免频繁地创建和销毁资源。
+        批量发送：为了提高性能，EventRabbitMQProducer 类可以实现批量发送消息的功能，减少与RabbitMQ的交互次数。
+        错误处理和重连机制：为了确保系统的健壮性，EventRabbitMQProducer 类将包含错误处理和自动重连机制。如果RabbitMQ连接中断，生产者将尝试重新连接，并继续发送未发送的消息。
+        日志记录：我们将在类中添加日志记录功能，方便调试和监控。
 
 """
 
@@ -16,7 +26,7 @@ import logging
 from functools import lru_cache
 import time
 from typing import List
-from util.logger import logger
+from tools.logger import logger
 
 
 
@@ -24,7 +34,6 @@ class EventRabbitMQProducer:
     def __init__(self, rabbitmq_host: str = 'localhost', rabbitmq_queue: str = 'file_transfer_queue'):
         """
         初始化RabbitMQProducer类。
-
         :param rabbitmq_host: RabbitMQ服务器地址
         :param rabbitmq_queue: RabbitMQ队列名称
         """
@@ -54,9 +63,8 @@ class EventRabbitMQProducer:
 
     def send_message(self, file_path: str):
         """
-        发送文件路径到RabbitMQ队列。
-
-        :param file_path: 文件路径
+        发送事件结果到RabbitMQ队列。
+        :param file_path: 文件路径 - 具体看事件的类型修改
         """
         try:
             self.channel.basic_publish(

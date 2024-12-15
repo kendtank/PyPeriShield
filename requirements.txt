@@ -1,0 +1,213 @@
+absl-py==2.1.0
+addict @ file:///home/conda/feedstock_root/build_artifacts/addict_1636818143388/work ; version=="2.4.0"
+annotated-types==0.7.0
+anyio==4.7.0
+asttokens==3.0.0
+attrs==24.2.0
+backcall==0.2.0
+beautifulsoup4==4.12.3
+bleach==6.2.0
+build==1.2.2.post1
+CacheControl==0.14.1
+certifi==2024.7.4
+cffi==1.17.1
+charset-normalizer==3.3.2
+cleo==2.1.0
+click==8.1.7
+colorama @ file:///home/conda/feedstock_root/build_artifacts/colorama_1733218098505/work ; version=="0.4.6"
+coloredlogs==15.0.1
+contourpy @ file:///home/conda/feedstock_root/build_artifacts/contourpy_1731428322366/work ; version=="1.3.1"
+crashtest==0.4.1
+cryptography==44.0.0
+cycler @ file:///home/conda/feedstock_root/build_artifacts/cycler_1733332471406/work ; version=="0.12.1"
+Cython @ file:///home/conda/feedstock_root/build_artifacts/cython_1727455855473/work ; version=="3.0.11"
+cython_bbox==0.1.5
+decorator==5.1.1
+defusedxml==0.7.1
+distlib==0.3.9
+docopt==0.6.2
+dulwich==0.21.7
+exceptiongroup==1.2.2
+executing==2.1.0
+fastapi==0.115.6
+fastjsonschema==2.21.1
+filelock==3.15.4
+filterpy==1.4.5
+flatbuffers==24.3.25
+fonttools==4.55.0
+fsspec @ file:///home/conda/feedstock_root/build_artifacts/fsspec_1733493342231/work ; version=="2024.10.0"
+gmpy2 @ file:///home/conda/feedstock_root/build_artifacts/gmpy2_1733462536562/work ; version=="2.1.5"
+grpcio==1.68.0
+h11==0.14.0
+humanfriendly==10.0
+idna==3.7
+importlib_metadata @ file:///home/conda/feedstock_root/build_artifacts/importlib-metadata_1733223117029/work ; version=="8.5.0"
+installer==0.7.0
+ipython==8.12.3
+jaraco.classes==3.4.0
+jedi==0.19.2
+jeepney==0.8.0
+Jinja2 @ file:///home/conda/feedstock_root/build_artifacts/jinja2_1733217336947/work ; version=="3.1.4"
+jsonschema==4.23.0
+jsonschema-specifications==2024.10.1
+jupyter_client==8.6.3
+jupyter_core==5.7.2
+jupyterlab_pygments==0.3.0
+keyring==24.3.1
+kiwisolver @ file:///home/conda/feedstock_root/build_artifacts/kiwisolver_1725459213453/work ; version=="1.4.7"
+lap @ file:///home/conda/feedstock_root/build_artifacts/lap_1650201344564/work ; version=="0.4.0"
+loguru==0.7.2
+Mako==1.3.7
+Markdown==3.7
+markdown-it-py @ file:///home/conda/feedstock_root/build_artifacts/markdown-it-py_1733250460757/work ; version=="3.0.0"
+MarkupSafe==2.1.5
+matplotlib==3.9.2
+matplotlib-inline==0.1.7
+mdurl @ file:///home/conda/feedstock_root/build_artifacts/mdurl_1733255585584/work ; version=="0.1.2"
+mistune==3.0.2
+mmcv==1.5.0
+mmdet==2.28.0
+mmengine==0.10.5
+mmengine-lite @ file:///home/conda/feedstock_root/build_artifacts/mmengine_1726869947591/work ; version=="0.10.5"
+more-itertools==10.5.0
+motmetrics==1.4.0
+mpmath @ file:///home/conda/feedstock_root/build_artifacts/mpmath_1733302684489/work ; version=="1.3.0"
+msgpack==1.1.0
+munkres==1.1.4
+nbclient==0.10.1
+nbconvert==7.16.4
+nbformat==5.10.4
+networkx==3.3
+numpy==1.24.0
+nvidia-cublas-cu11==11.11.3.6
+nvidia-cublas-cu12==12.1.3.1
+nvidia-cuda-cupti-cu11==11.8.87
+nvidia-cuda-cupti-cu12==12.1.105
+nvidia-cuda-nvrtc-cu11==11.8.89
+nvidia-cuda-nvrtc-cu12==12.1.105
+nvidia-cuda-runtime-cu11==11.8.89
+nvidia-cuda-runtime-cu12==12.1.105
+nvidia-cudnn-cu11==8.7.0.84
+nvidia-cudnn-cu12==8.9.2.26
+nvidia-cufft-cu11==10.9.0.58
+nvidia-cufft-cu12==11.0.2.54
+nvidia-curand-cu11==10.3.0.86
+nvidia-curand-cu12==10.3.2.106
+nvidia-cusolver-cu11==11.4.1.48
+nvidia-cusolver-cu12==11.4.5.107
+nvidia-cusparse-cu11==11.7.5.86
+nvidia-cusparse-cu12==12.1.0.106
+nvidia-nccl-cu11==2.19.3
+nvidia-nccl-cu12==2.19.3
+nvidia-nvjitlink-cu12==12.6.85
+nvidia-nvtx-cu11==11.8.86
+nvidia-nvtx-cu12==12.1.105
+nvidia-pyindex==1.0.9
+nvidia-tensorrt==99.0.0
+onnx==1.17.0
+onnxruntime==1.20.1
+onnxruntime-gpu==1.17.0
+onnxslim==0.1.43
+opencv-python==4.10.0.84
+opencv-python-headless==4.10.0
+packaging @ file:///home/conda/feedstock_root/build_artifacts/packaging_1733203243479/work ; version=="24.2"
+pandas==2.2.3
+pandocfilters==1.5.1
+parso==0.8.4
+pexpect==4.9.0
+pickleshare==0.7.5
+pika==1.3.2
+pillow==10.4.0
+pkginfo==1.12.0
+platformdirs @ file:///home/conda/feedstock_root/build_artifacts/platformdirs_1733232627818/work ; version=="4.3.6"
+poetry==1.8.5
+poetry-core==1.9.1
+poetry-plugin-export==1.8.0
+prompt_toolkit==3.0.48
+protobuf==5.28.3
+psutil==6.1.0
+ptyprocess==0.7.0
+pure_eval==0.2.3
+py-cpuinfo==9.0.0
+pybind11==2.13.6
+pycocotools @ file:///home/conda/feedstock_root/build_artifacts/pycocotools_1731600554546/work ; version=="2.0.8"
+pycparser==2.22
+pycuda==2024.1.2
+pydantic==2.10.3
+pydantic_core==2.27.1
+Pygments @ file:///home/conda/feedstock_root/build_artifacts/pygments_1733221634316/work ; version=="2.18.0"
+pyparsing @ file:///home/conda/feedstock_root/build_artifacts/pyparsing_1733222594562/work ; version=="3.2.0"
+pyproject_hooks==1.2.0
+python-dateutil @ file:///home/conda/feedstock_root/build_artifacts/python-dateutil_1733215673016/work ; version=="2.9.0.post0"
+pytools==2024.1.19
+pytz==2024.2
+PyYAML @ file:///home/conda/feedstock_root/build_artifacts/pyyaml_1725456145900/work ; version=="6.0.2"
+pyzmq==26.2.0
+RapidFuzz==3.10.1
+referencing==0.35.1
+regex @ file:///home/conda/feedstock_root/build_artifacts/regex_1730952192772/work ; version=="2024.11.6"
+requests==2.32.3
+requests-toolbelt==1.0.0
+rich @ file:///home/conda/feedstock_root/build_artifacts/rich_1733342254348/work/dist ; version=="13.9.4"
+rpds-py==0.22.3
+scipy==1.11.1
+seaborn==0.13.2
+SecretStorage==3.3.3
+shapely @ file:///home/conda/feedstock_root/build_artifacts/shapely_1727273399315/work ; version=="2.0.6"
+shellingham==1.5.4
+six==1.16.0
+sniffio==1.3.1
+soupsieve==2.6
+stack-data==0.6.3
+starlette==0.41.3
+sympy==1.13.0
+tabulate==0.9.0
+tensorboard==2.18.0
+tensorboard-data-server==0.7.2
+tensorrt==8.6.0
+tensorrt-bindings==8.6.1
+tensorrt-cu12-bindings==10.7.0
+tensorrt-cu12-libs==10.7.0
+tensorrt-libs==8.6.1
+tensorrt_cu12==10.7.0
+termcolor @ file:///home/conda/feedstock_root/build_artifacts/termcolor_1728288976871/work ; version=="2.5.0"
+terminaltables @ file:///home/conda/feedstock_root/build_artifacts/terminaltables_1639069502917/work ; version=="3.1.10"
+thop==0.1.1.post2209072238
+tinycss2==1.4.0
+tomli @ file:///home/conda/feedstock_root/build_artifacts/tomli_1733256695513/work ; version=="2.2.1"
+tomlkit==0.13.2
+torch @ file:///home/lyh/work/depoly/other/torch-2.2.0%2Bcu118-cp310-cp310-linux_x86_64.whl#sha256=4377e0a7fe8ff8ffc4f7c9c6130c1dcd3874050ae4fc28b7ff1d35234fbca423 ; version=="2.2.0+cu118"
+torch_tensorrt==2.2.0
+torchaudio @ file:///home/lyh/work/depoly/other/torchaudio-2.2.0%2Bcu118-cp310-cp310-linux_x86_64.whl#sha256=c932803b158f8ad66bcf13eff4f1fc3f7c9e6e02c13fb6eda42c0e5fcea99588 ; version=="2.2.0+cu118"
+torchvision @ file:///home/lyh/work/depoly/other/torchvision-0.17.0%2Bcu118-cp310-cp310-linux_x86_64.whl#sha256=2e63d62e09d9b48b407d3e1b30eb8ae4e3abad6968e8d33093b60d0657542428 ; version=="0.17.0+cu118"
+tornado==6.4.2
+tqdm==4.67.0
+traitlets==5.14.3
+triton==2.2.0
+trove-classifiers==2024.10.21.16
+typing_extensions @ file:///home/conda/feedstock_root/build_artifacts/typing_extensions_1733188668063/work ; version=="4.12.2"
+tzdata==2024.2
+ultralytics==8.3.38
+ultralytics-thop==2.0.12
+unicodedata2 @ file:///home/conda/feedstock_root/build_artifacts/unicodedata2_1729704533769/work ; version=="15.1.0"
+urllib3==2.2.2
+uvicorn==0.32.1
+virtualenv==20.28.0
+wcwidth==0.2.13
+webencodings==0.5.1
+Werkzeug==3.1.3
+xmltodict==0.14.2
+yapf @ file:///home/conda/feedstock_root/build_artifacts/yapf_1733505498230/work ; version=="0.40.1"
+yarg==0.1.9
+# Editable install with no version control (yolox==0.1.0)
+-e /home/lyh/work/ByteTrack-main
+zipp @ file:///home/conda/feedstock_root/build_artifacts/zipp_1732827521216/work ; version=="3.21.0"
+
+lap==0.4.0
+torch==2.2.0+cu118
+torchvision==0.17.0+cu118
+yaml==0.2.5
+pyyaml==6.0.2
+shapely==2.0.6
+redis==5.2.1
+torchaudio==2.2.0+cu118

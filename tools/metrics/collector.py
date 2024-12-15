@@ -1,3 +1,13 @@
+# -*- coding: utf-8 -*-
+"""
+@Time    : 2024/12/12 下午9:08
+@Author  : Kend
+@FileName: collector.py
+@Software: PyCharm
+@modifier:
+"""
+
+
 import psutil
 import pynvml
 import platform

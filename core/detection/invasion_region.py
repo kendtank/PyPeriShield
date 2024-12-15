@@ -14,12 +14,13 @@ import numpy as np
 import os
 
 
+"""入侵检测, 可以直接继承yolo11 重写推理方法 """
 class InvasionYolo11:
 
-    def __init__(self, ckpt_path, input_size=(640, 640), fp16=False, iou_type=None, conf_thres=0.1, iou_thres=0.4):
+    def __init__(self, ckpt_path, input_size=(640, 640), fp16=False, iou_type=None, conf_thres=0.7, iou_thres=0.4):
         self.iou_type = iou_type  # yolov5的iou_type, 这里是为了保持参数一至
         # print(conf_thres, "conf")
-        self.conf_thres = conf_thres
+        self.conf_thres = conf_thres  # 这里为了检测入侵，所以默认为0.7
         self.iou_thres = iou_thres
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model = YOLO(ckpt_path)

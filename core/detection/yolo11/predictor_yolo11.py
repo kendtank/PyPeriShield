@@ -26,6 +26,7 @@ class PredictorYolo11:
         self.txt = True if os.path.basename(ckpt_path).endswith("engine") else False
         # logger.info(f"Loading model {ckpt_path}")
         if self.txt:
+            # 确保tensorrt能够正常推理
             x = torch.ones((1, 3, input_size[0], input_size[1]), device=self.device)
             self.model = YOLO(ckpt_path)
             self.model(x)

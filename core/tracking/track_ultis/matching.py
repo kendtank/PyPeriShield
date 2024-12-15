@@ -1,11 +1,22 @@
+"""
+@Author: Kend
+@Date: 2024/11/23
+@Time: 14:46
+@Description: kalman_filter - 卡尔曼滤波算法
+@Modify:
+@Contact: tankang0722@gmail.com
+"""
+
+
 import cv2
 import numpy as np
 import scipy
 import lap
 from scipy.spatial.distance import cdist
 from cython_bbox import bbox_overlaps as bbox_ious
-import kalman_filter
-import time
+from .kalman_filter import kalman_filter
+
+
 
 def merge_matches(m1, m2, shape):
     O,P,Q = shape

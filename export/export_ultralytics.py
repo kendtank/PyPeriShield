@@ -7,7 +7,6 @@ import numpy as np
 import cv2
 
 
-
 def convert_model_to_engine(model_path, output_dir='.', format='engine', device=0, half=True, simplify=True, workspace=4.0, dynamic=True, imgsz=640, batch=1):
     """
     将 PyTorch 模型 (.pt) 转换为 TensorRT 引擎文件 (.engine)。
@@ -27,9 +26,9 @@ def convert_model_to_engine(model_path, output_dir='.', format='engine', device=
     返回:
         str: 生成的 TensorRT 引擎文件路径。
     """
+
     # 加载模型
     model = YOLO(model_path)
-
     # 设置输出文件名
     os.makedirs(output_dir, exist_ok=True)
     base_name = os.path.splitext(os.path.basename(model_path))[0]
@@ -64,7 +63,7 @@ def convert_model_to_engine(model_path, output_dir='.', format='engine', device=
         imgsz=imgsz,
         batch=batch,  # 显式设置最大批处理大小
         # profile=profile  # 传递优化配置文件
-        #  TODO  task='detect',  # 显式指定任务类型
+        #  TODO  task='detect',  # 显式指定任务类型 不影响但是会造成warning
     )
 
     print(f"Model converted successfully and saved to: {output_file}")

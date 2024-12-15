@@ -19,7 +19,6 @@ class Track:
         self.max_missed_frames = max_missed_frames  # 允许的最大未检测帧数与追终器保持一致
         self.missed_frames = 0  # 当前连续未检测帧数
         self.intersected_lines = set()  # 记录相交的线段
-        # self.intersected_lines_mark = set() #
 
 
     def update(self, tlwh):
@@ -40,6 +39,8 @@ class Track:
 
     """检查多线段轨迹是否与给定的线段相交"""
     def check_intersection(self, lines):
+        # print('line--', lines)
+        # print('self.locations--', self.locations)
         """检查轨迹的所有点连接成的多段线是否与给定的线段相交"""
         if len(self.locations) < 2:
             return False
@@ -50,15 +51,15 @@ class Track:
         for line in lines:
             # 创建给定的线段
             segment = LineString([line[0], line[1]])
-
             # 检查多段线是否与当前线段相交
             if polyline.intersects(segment):
                 # 把相交的周界线记录
-                self.intersected_lines.add(tuple(tuple(sublist) for sublist in line))
-                # self.intersected_lines.add(line)
+                # print("polyline--", line)
+                self.intersected_lines.add(tuple(tuple(sublist) for sublist in line))  # 列表不可哈希，不能放到set中
                 return True
 
         return False
+
 
     def get_intersected_lines(self):
         """返回与该轨迹相交的所有线段"""

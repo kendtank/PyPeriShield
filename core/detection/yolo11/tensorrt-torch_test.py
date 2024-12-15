@@ -10,9 +10,7 @@
 """
 
 import torch
-
 import torch_tensorrt
-
 from predictor_yolo11 import PredictorYolo11
 
 print("torch_tensorrt.version:", torch_tensorrt.__version__)

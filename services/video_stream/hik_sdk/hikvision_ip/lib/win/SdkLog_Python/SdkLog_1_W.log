@@ -1,0 +1,38 @@
+[2024-04-28 11:16:40.730][DBG] CCoreGlobalCtrlBase::LoadDSo, HPR_LoadDSo Succ, Path[E:/cap_picture_here/hikvision_ip/lib/win/zlib1.dll], hHandleRet[2008481792]
+[2024-04-28 11:16:40.730][INF] The COM:HCCoreBase ver is 6.1.4.15, 2020_03_05. Async:1.
+[2024-04-28 11:16:40.730][INF] The COM:Core ver is 6.1.9.48, 2023_04_10. Async:1.
+[2024-04-28 11:16:40.730][INF] This HCNetSDK ver is 6.1.9.48 Ver 2023_04_10.
+[2024-04-28 11:16:41.305][INF] Login dev 10.134.128.61:8000.
+[2024-04-28 11:16:41.305][INF] dwTotalNum[2048]
+[2024-04-28 11:16:41.318][INF] Private connect 10.134.128.61:8000 sock=2864 this=0x769edf84 cmd=0x10000 port=57298
+[2024-04-28 11:16:41.318][INF] LogonDev1 in[10.134.128.61:8000]
+[2024-04-28 11:16:41.318][DBG] CCoreGlobalCtrlBase::LoadDSo, HPR_LoadDSo Succ, Path[E:/cap_picture_here/hikvision_ip/lib/win/libcrypto-1_1-x64.dll], hHandleRet[496828416]
+[2024-04-28 11:16:41.318][DBG] Load [libcrypto-1_1-x64.dll] SUCC, Real Path[E:\cap_picture_here\hikvision_ip\lib\win\libcrypto-1_1-x64.dll]
+[2024-04-28 11:16:41.319][DBG] CCoreGlobalCtrlBase::LoadDSo, HPR_LoadDSo Succ, Path[E:/cap_picture_here/hikvision_ip/lib/win/libssl-1_1-x64.dll], hHandleRet[921042944]
+[2024-04-28 11:16:41.319][DBG] Load [libssl-1_1-x64.dll] SUCC, Real Path[E:\cap_picture_here\hikvision_ip\lib\win\libssl-1_1-x64.dll]
+[2024-04-28 11:16:41.319][INF] SSLTRANSAPI::IsAllAPILoaded, SSL_library_init Unload
+[2024-04-28 11:16:41.319][INF] OpenSSL, Not All Function Loaded!
+[2024-04-28 11:16:41.319][INF] SSLTRANSAPI::PrintVersion, OpenSSL version info [OpenSSL 1.1.1l  24 Aug 2021]
+[2024-04-28 11:16:41.319][INF] CSSLTrans::SSLCtxInit, dwSSLVersion[6], m_fnTLSServerMethod
+[2024-04-28 11:16:41.320][ERR] CSSLTrans::SSLTrans_CTX_Load_CA, invalid path[E:/cap_picture_here/hikvision_ip/lib/win/cert/\]
+[2024-04-28 11:16:41.892][DBG] CComBase::Load, Load szDllPath[E:/cap_picture_here/hikvision_ip/lib/win/HCNetSDKCom/HCPreview.dll] SUCC
+[2024-04-28 11:16:41.892][INF] AbilityAnalyze---Init-- start
+[2024-04-28 11:16:41.902][INF] The COM:Preview ver is 6.1.9.48, 2023_04_10.
+[2024-04-28 11:16:41.902][INF] CCoreGlobalCtrl::LoadDSo, enumDllType[0], cTempPath[E:/cap_picture_here/hikvision_ip/lib/win/]
+[2024-04-28 11:16:41.902][DBG] CCoreGlobalCtrl::LoadDSo, HPR_LoadDSo, hHandleRet[2039349248], enumDllType[0], Path[PlayCtrl.dll], syserror[127]
+[2024-04-28 11:16:41.902][DBG] ID-IP-CHAN[0-10.134.128.61-1] [CPreviewPlayer::CreatePlayer] create player success, version is[v7.4.0.40]
+[2024-04-28 11:16:41.903][INF] Private connect 10.134.128.61:8000 sock=3632 this=0x769edf84 cmd=0x30000 port=57299
+[2024-04-28 11:16:41.909][INF] ID-IP-CHAN[0-10.134.128.61-1] [CGetTCPStream::Start] Stream Head Data Callback Start
+[2024-04-28 11:16:41.909][INF] ID-IP-CHAN[0-10.134.128.61-1] [CGetTCPStream::Start] Stream Head Data Callback End
+[2024-04-28 11:16:41.909][ERR] GetOverlayFontPath Failed
+[2024-04-28 11:16:41.911][INF] ID-IP-CHAN[0-10.134.128.61-1] [CPreviewPlayer::OpenPlayer] open player[7846a344] success
+[2024-04-28 11:16:41.911][INF] CCoreGlobalCtrl::LoadDSo, enumDllType[2], cTempPath[E:/cap_picture_here/hikvision_ip/lib/win/HCNetSDKCom/]
+[2024-04-28 11:16:41.915][DBG] CCoreGlobalCtrl::LoadDSo, HPR_LoadDSo, hHandleRet[11534336], enumDllType[2], Path[SystemTransform.dll], syserror[0]
+[2024-04-28 11:16:41.915][INF] CStreamConvert::LoadConvertLib Load Succ, m_iInitCount = 1
+[2024-04-28 11:16:43.295][INF] Private connect 10.134.128.61:8000 sock=4460 this=0x769ee6f0 cmd=0x30200 port=57300
+[2024-04-28 11:16:44.299][INF] Private connect 10.134.128.61:8000 sock=4484 this=0x769ee6f0 cmd=0x30200 port=57302
+[2024-04-28 11:16:44.303][DBG] CStreamConvert::UnloadConvertLib, m_iInitCount = 0
+[2024-04-28 11:16:44.350][INF] COM_Logout[0][0]
+[2024-04-28 11:16:44.350][DBG] CUserMgr::UnRegisterHeartProxy[0]
+[2024-04-28 11:16:44.363][INF] Private connect 10.134.128.61:8000 sock=3540 this=0x769edf84 cmd=0x10100 port=57303
+[2024-04-28 11:16:44.366][INF] CTransUnitMgr::UnloadTransUnitLib

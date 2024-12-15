@@ -7,9 +7,9 @@
 @modifier:
 """
 
-# 假设您已经有一个 SQL 类和 MQ 类的实现
-from collector import  PerformanceMonitor
-from your_mq_module import MQ, SQL
+# 假设已经有一个 SQL 类和 MQ 类的实现
+from collector import PerformanceMonitor
+from .not collector import MQ, SQL
 
 
 

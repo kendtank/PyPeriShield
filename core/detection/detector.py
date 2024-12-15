@@ -12,6 +12,9 @@ import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import numpy as np
 
+"""
+跟踪算法的检测头。支持yolo11和yolov5
+"""
 
 def singleton(cls):
     """ 单例装饰器 进程分配单例 """
@@ -68,13 +71,13 @@ class Detector:
                         from core.detection.yolo11.predictor_yolo11 import PredictorYolo11
                         self.model = PredictorYolo11(
                             self.ckpt_path, self.input_size, fp16=self.half, iou_type=None,
-                            conf_thres = self.conf_thres, iou_thres = self.iou_thres
+                            conf_thres=self.conf_thres, iou_thres=self.iou_thres
                         )
                     elif self.detector == 'yolov5':
                         from core.detection.yolov5.predictor_yolov5 import Yolov5Predictor
                         self.model = Yolov5Predictor(
                             self.ckpt_path, self.input_size, self.half, iou_type=self.iou_type,
-                            conf_thres = self.conf_thres, iou_thres = self.iou_thres
+                            conf_thres=self.conf_thres, iou_thres=self.iou_thres
                         )
                     else:
                         # NOTE 留给yolo12
@@ -108,7 +111,7 @@ class Detector:
         self.executor.shutdown(wait=wait)
 
 
-    # 批处理方式才会提升fps， 但是场景用不到，多线程已经足够快了 # NOTE 提升在5%
+    # 批处理方式才会提升fps， 但是场景用不到，多线程已经足够快了 # NOTE 提升在5%, 有些场景反而慢
     def work(self, images: list[np.ndarray]):
         """
         Args:
