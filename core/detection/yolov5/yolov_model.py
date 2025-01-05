@@ -1,13 +1,3 @@
-# -*- coding: utf-8 -*- #
-# ----------------------------------------
-# File Name: yolov5_model.py
-# Author: 黄俊炳
-# modifier: 黄俊炳
-# Version: v00
-# Created: ...
-# Modification: 2023/05/31
-# Description: yolov5框架所用到的类，勿随意改动，详细作用请自行了解yolov5框架
-# ----------------------------------------
 from pathlib import Path
 
 import numpy as np

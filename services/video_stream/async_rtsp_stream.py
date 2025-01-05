@@ -8,7 +8,7 @@
 @Modify:
 @Contact: tankang0722@gmail.com
 """
-# NOTE: 可以考虑存图和发送mq做异步处理 - 待优化项
+# NOTE: 可以考虑存图和发送mq做异步处理 - 待优化项 (取消，mq速度比存图快很多)
 
 import cv2
 import os

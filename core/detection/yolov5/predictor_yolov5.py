@@ -46,7 +46,7 @@ class Yolov5Predictor:
             image = cv2.imread(image)
         img, ratio = preprocess_image(image, self.input_size, self.rgb_means, self.std)
         # print("ratio:", ratio)  # 0.5
-        im = torch.from_numpy(img).unsqueeze(0).float().to(self.device)  # 多张图的unsqueeze不一定是0 NOTE
+        im = torch.from_numpy(img).unsqueeze(0).float().to(self.device)  # NOTE 如果是需要批处理的话 多张图的unsqueeze不一定是0
         if self.fp16:
             im = im.half()  # to FP16
         else:

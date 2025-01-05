@@ -1,16 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-"""
-@Author: Kend
-@Date: 2024/12/7
-@Time: 09:24
-@Description: test_yolo11 - 文件描述
-@Modify:
-@Contact: tankang0722@gmail.com
-"""
-
-import numpy as np
-import logging
 # -*- coding: utf-8 -*-
 """
 @Time    : 2024/12/8 下午1:46

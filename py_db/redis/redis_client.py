@@ -2,7 +2,7 @@
 """
 @Time    : 2024/12/6 下午8:42
 @Author  : Kend
-@FileName: redis.py
+@FileName: redis_client.py
 @Software: PyCharm
 @modifier:
 """
@@ -10,7 +10,7 @@
 import redis
 from typing import Any, Optional
 
-
+"""一个Redis的使用实例"""
 
 class RedisClient:
     def __init__(self, host: str = 'localhost', port: int = 6379, db: int = 0, password: Optional[str] = None):

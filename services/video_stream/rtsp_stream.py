@@ -146,6 +146,107 @@ class RTSPCamera:
 
 
 
+"""使用opencv的grab 和 retrieve 减少cpu使用率 """
+class RTSPClientGrab:
+    def __init__(self, rtsp_url, target_fps=5, source_fps=25, reconnect_delay=5):
+        """
+        :param rtsp_url: RTSP 流地址
+        :param target_fps: 需要采集的帧率（如 5）
+        :param source_fps: 原始视频流的帧率（如 25）
+        :param reconnect_delay: 断线重连的时间间隔（单位：秒）
+        """
+        self.rtsp_url = rtsp_url
+        self.target_fps = target_fps
+        self.frame_interval = int(source_fps / target_fps)  # 每隔多少帧采一次
+        self.reconnect_delay = reconnect_delay
+        self.running = False
+        self.capture = None
+        self.last_success_time = None  # 记录最后一次成功采集帧的时间
+
+    def connect(self):
+        """尝试连接到 RTSP 流"""
+        if self.capture:
+            self.capture.release()
+
+        self.capture = cv2.VideoCapture(self.rtsp_url)
+        if not self.capture.isOpened():
+            print(f"[ERROR] Failed to connect to {self.rtsp_url}")
+            return False
+
+        print(f"[INFO] Successfully connected to {self.rtsp_url}")
+        self.last_success_time = time.time()  # 更新成功连接时间
+        return True
+
+    def check_connection(self):
+        """检查是否需要重连"""
+        if not self.capture or not self.capture.isOpened():
+            print("[WARNING] Connection lost, attempting to reconnect...")
+            self.connect()
+            time.sleep(self.reconnect_delay)
+
+    def read_and_process(self):
+        """读取和处理帧"""
+        while self.running:
+            self.check_connection()  # 检查连接状态
+
+            for _ in range(self.frame_interval - 1):
+                if not self.capture.grab():  # 尝试跳帧
+                    print("[WARNING] Failed to grab frame, reconnecting...")
+                    self.check_connection()
+                    break
+
+            # 获取目标帧
+            ret, frame = self.capture.retrieve()
+            if not ret:
+                print("[WARNING] Failed to retrieve frame, reconnecting...")
+                self.check_connection()
+                continue
+
+            self.last_success_time = time.time()  # 更新成功处理帧的时间
+            self.process_frame(frame)
+
+            # 保证实时性
+            time.sleep(1 / self.target_fps)
+
+    def process_frame(self, frame):
+        """对帧进行处理，这里仅示例显示"""
+        print("[INFO] Processing frame")
+        # 示例：仅显示帧（实际可替换为保存帧或推送到其他服务）
+        # cv2.imshow("Frame", frame)
+        # cv2.waitKey(1)
+
+    def start(self):
+        """启动 RTSP 流采集"""
+        self.running = True
+        if not self.connect():
+            print("[ERROR] Initial connection failed, exiting...")
+            return
+
+        try:
+            self.read_and_process()
+        except Exception as e:
+            print(f"[ERROR] Exception occurred: {e}")
+        finally:
+            self.stop()
+
+    def stop(self):
+        """停止 RTSP 流采集"""
+        self.running = False
+        if self.capture:
+            self.capture.release()
+        print("[INFO] Stream stopped")
+
+
+# # 使用示例
+# if __name__ == "__main__":
+#     rtsp_url = "rtsp://username:password@ip_address:port/stream"
+#     client = RTSPClient(rtsp_url, target_fps=5, source_fps=25)
+#
+#     try:
+#         client.start()
+#     except KeyboardInterrupt:
+#         client.stop()
+
 if __name__ == "__main__":
     # 配置摄像头信息
     cameras = [
